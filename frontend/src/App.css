@@ -1,0 +1,884 @@
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+
+/* =====================================================
+   PUBLIC LANDING PAGE
+===================================================== */
+
+.public-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(62, 82, 255, 0.9),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #05091f 0%,
+      #101b62 45%,
+      #273ed6 100%
+    );
+
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* =====================================================
+   TOP BAR
+===================================================== */
+
+.public-topbar {
+  width: 100%;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 7%;
+
+  border-bottom: 1px solid
+    rgba(255, 255, 255, 0.15);
+
+  position: relative;
+  z-index: 2;
+}
+
+.brand {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.brand span {
+  color: #ffd400;
+}
+
+.poll-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #e6eaff;
+}
+
+
+/* =====================================================
+   PUBLIC CENTER CARD
+===================================================== */
+
+.public-card {
+  width: min(900px, 92%);
+  margin: auto;
+
+  text-align: center;
+
+  position: relative;
+  z-index: 2;
+}
+
+.start-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 60px 20px 80px;
+}
+
+
+/* =====================================================
+   TROPHY
+===================================================== */
+
+.trophy {
+  font-size: 64px;
+  margin-bottom: 8px;
+
+  filter:
+    drop-shadow(0 8px 15px rgba(0, 0, 0, 0.3));
+}
+
+.small-title {
+  color: #ffd400;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 5px;
+  margin-bottom: 20px;
+}
+
+
+/* =====================================================
+   MAIN TITLE
+===================================================== */
+
+.start-card h1 {
+  margin: 0;
+
+  font-size: clamp(48px, 7vw, 82px);
+
+  line-height: 0.98;
+
+  font-weight: 800;
+
+  letter-spacing: -3px;
+
+  text-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.25);
+}
+
+.start-card h1 span {
+  color: #ffd400;
+}
+
+.start-card p {
+  margin-top: 25px;
+
+  max-width: 650px;
+
+  font-size: 17px;
+
+  line-height: 1.6;
+
+  color: rgba(255, 255, 255, 0.9);
+}
+
+
+/* =====================================================
+   NAME INPUT
+===================================================== */
+
+.name-section {
+  width: min(620px, 100%);
+
+  display: flex;
+
+  gap: 0;
+
+  margin-top: 35px;
+}
+
+.name-section input {
+  flex: 1;
+
+  height: 58px;
+
+  border: 2px solid
+    rgba(255, 255, 255, 0.45);
+
+  border-right: none;
+
+  border-radius: 10px 0 0 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: white;
+
+  padding: 0 20px;
+
+  font-size: 16px;
+
+  outline: none;
+
+  backdrop-filter: blur(10px);
+}
+
+.name-section input::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.name-section input:focus {
+  border-color: #ffd400;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.name-section button {
+  height: 58px;
+
+  padding: 0 28px;
+
+  border: none;
+
+  border-radius: 0 10px 10px 0;
+
+  background: #ffd400;
+
+  color: #17205f;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+.name-section button:hover {
+  background: #ffe45c;
+
+  transform: translateX(2px);
+}
+
+
+/* =====================================================
+   PUBLIC ERROR
+===================================================== */
+
+.public-error {
+  margin-top: 18px;
+
+  padding: 12px 18px;
+
+  border-radius: 8px;
+
+  background: rgba(220, 38, 38, 0.18);
+
+  border: 1px solid
+    rgba(248, 113, 113, 0.5);
+
+  color: #ffe1e1;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   PUBLIC FOOTER
+===================================================== */
+
+.public-footer {
+  text-align: center;
+
+  padding: 20px;
+
+  font-size: 12px;
+
+  color: rgba(255, 255, 255, 0.55);
+
+  position: relative;
+  z-index: 2;
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.public-loading {
+  min-height: 100vh;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   QUESTION PAGE
+===================================================== */
+
+.question-page {
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(45, 70, 220, 0.45),
+      transparent 35%
+    ),
+    #07102f;
+
+  color: white;
+
+  padding-bottom: 70px;
+}
+
+
+/* =====================================================
+   QUESTION HEADER
+===================================================== */
+
+.question-header {
+  width: min(1100px, 92%);
+
+  margin: auto;
+
+  padding: 45px 0 30px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  border-bottom: 1px solid
+    rgba(255, 255, 255, 0.12);
+}
+
+.question-brand {
+  font-size: 18px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+.question-brand span {
+  color: #ffd400;
+}
+
+.question-header h1 {
+  margin: 12px 0 5px;
+
+  font-size: 34px;
+}
+
+.question-header p {
+  margin: 0;
+
+  color: #bfc8eb;
+
+  font-size: 15px;
+}
+
+.question-header strong {
+  color: #ffd400;
+}
+
+.question-count {
+  padding: 10px 16px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 212, 0, 0.12);
+
+  border: 1px solid
+    rgba(255, 212, 0, 0.35);
+
+  color: #ffd400;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   QUESTIONS CONTAINER
+===================================================== */
+
+.questions-container {
+  width: min(1100px, 92%);
+
+  margin: 35px auto 0;
+}
+
+
+/* =====================================================
+   QUESTION CARD
+===================================================== */
+
+.question-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.075),
+      rgba(255, 255, 255, 0.025)
+    );
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.12);
+
+  border-radius: 18px;
+
+  padding: 30px;
+
+  margin-bottom: 24px;
+
+  box-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.18);
+
+  backdrop-filter: blur(12px);
+}
+
+.question-number {
+  color: #ffd400;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+  margin-bottom: 10px;
+}
+
+.question-card h2 {
+  margin: 0;
+
+  font-size: 23px;
+
+  line-height: 1.4;
+
+  color: white;
+}
+
+.multiple-hint {
+  margin: 9px 0 20px;
+
+  color: #929ecb;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   OPTIONS GRID
+===================================================== */
+
+.options-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+
+/* =====================================================
+   OPTION CARD
+===================================================== */
+
+.option-card {
+  min-height: 55px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px 16px;
+
+  border-radius: 10px;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.12);
+
+  background: rgba(255, 255, 255, 0.035);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+
+  color: #e7ebff;
+}
+
+.option-card:hover {
+  transform: translateY(-2px);
+
+  border-color:
+    rgba(255, 212, 0, 0.5);
+
+  background:
+    rgba(255, 255, 255, 0.07);
+}
+
+
+/* Hide real checkbox */
+
+.option-card input {
+  display: none;
+}
+
+
+/* Custom checkbox */
+
+.custom-checkbox {
+  width: 22px;
+
+  height: 22px;
+
+  min-width: 22px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 6px;
+
+  border: 2px solid
+    rgba(255, 255, 255, 0.35);
+
+  color: #17205f;
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+  transition: 0.2s ease;
+}
+
+
+/* Selected option */
+
+.option-card.selected {
+  border-color: #ffd400;
+
+  background:
+    rgba(255, 212, 0, 0.11);
+
+  box-shadow:
+    0 5px 20px
+    rgba(255, 212, 0, 0.08);
+}
+
+.option-card.selected .custom-checkbox {
+  background: #ffd400;
+
+  border-color: #ffd400;
+}
+
+.option-text {
+  font-size: 15px;
+
+  line-height: 1.4;
+}
+
+
+/* =====================================================
+   SUBMIT SECTION
+===================================================== */
+
+.submit-section {
+  display: flex;
+
+  justify-content: center;
+
+  padding: 15px 0 30px;
+}
+
+.submit-poll-button {
+  min-width: 260px;
+
+  height: 58px;
+
+  padding: 0 30px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #ffd400;
+
+  color: #17205f;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+
+  box-shadow:
+    0 10px 30px
+    rgba(255, 212, 0, 0.16);
+}
+
+.submit-poll-button:hover {
+  background: #ffe45c;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 35px
+    rgba(255, 212, 0, 0.22);
+}
+
+.submit-poll-button:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* =====================================================
+   SUBMIT ERROR
+===================================================== */
+
+.submit-error {
+  margin: 15px 0;
+
+  padding: 14px 18px;
+
+  border-radius: 10px;
+
+  background: rgba(220, 38, 38, 0.15);
+
+  border: 1px solid
+    rgba(248, 113, 113, 0.45);
+
+  color: #ffd4d4;
+
+  font-size: 14px;
+
+  text-align: center;
+}
+
+
+/* =====================================================
+   THANK YOU PAGE
+===================================================== */
+
+.thank-you-card {
+  max-width: 700px;
+
+  padding: 70px 35px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.03)
+    );
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.15);
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 25px 70px
+    rgba(0, 0, 0, 0.3);
+
+  backdrop-filter: blur(15px);
+}
+
+.thank-you-card h1 {
+  margin: 10px 0;
+
+  font-size: 45px;
+}
+
+.thank-you-text {
+  color: #d6dcf5;
+
+  font-size: 17px;
+
+  line-height: 1.6;
+}
+
+.success-box {
+  display: inline-block;
+
+  margin-top: 20px;
+
+  padding: 12px 18px;
+
+  border-radius: 8px;
+
+  background:
+    rgba(34, 197, 94, 0.12);
+
+  border: 1px solid
+    rgba(74, 222, 128, 0.35);
+
+  color: #b9f7c8;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   RESPONSIVE — TABLET
+===================================================== */
+
+@media (max-width: 800px) {
+
+  .public-topbar {
+    padding: 0 5%;
+  }
+
+  .start-card {
+    padding-top: 45px;
+  }
+
+  .start-card h1 {
+    font-size: 55px;
+  }
+
+  .question-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 18px;
+  }
+
+  .options-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVE — MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .public-topbar {
+    height: 70px;
+  }
+
+  .brand {
+    font-size: 20px;
+  }
+
+  .poll-label {
+    font-size: 9px;
+
+    letter-spacing: 2px;
+  }
+
+  .start-card {
+    padding:
+      40px 10px 60px;
+  }
+
+  .trophy {
+    font-size: 50px;
+  }
+
+  .small-title {
+    font-size: 11px;
+  }
+
+  .start-card h1 {
+    font-size: 42px;
+
+    letter-spacing: -1.5px;
+  }
+
+  .start-card p {
+    font-size: 14px;
+  }
+
+  .name-section {
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .name-section input {
+    width: 100%;
+
+    border-right: 2px solid
+      rgba(255, 255, 255, 0.45);
+
+    border-radius: 9px;
+  }
+
+  .name-section button {
+    width: 100%;
+
+    border-radius: 9px;
+  }
+
+
+  /* Questions */
+
+  .question-header {
+    width: 92%;
+
+    padding-top: 30px;
+  }
+
+  .question-header h1 {
+    font-size: 27px;
+  }
+
+  .question-card {
+    padding: 22px 18px;
+
+    border-radius: 14px;
+  }
+
+  .question-card h2 {
+    font-size: 19px;
+  }
+
+  .option-card {
+    padding: 12px;
+
+    min-height: 52px;
+  }
+
+  .option-text {
+    font-size: 14px;
+  }
+
+  .submit-poll-button {
+    width: 100%;
+  }
+
+
+  /* Thank you */
+
+  .thank-you-card {
+    width: 92%;
+
+    padding: 55px 20px;
+  }
+
+  .thank-you-card h1 {
+    font-size: 34px;
+  }
+
+  .thank-you-text {
+    font-size: 15px;
+  }
+
+}

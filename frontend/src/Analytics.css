@@ -1,0 +1,325 @@
+.login-page {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  width: 100vw !important;
+  min-height: 100vh !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  background: #06142e !important;
+
+  padding: 24px !important;
+  box-sizing: border-box !important;
+
+  overflow-y: auto !important;
+
+  z-index: 9999 !important;
+}
+
+
+/* =========================================
+   DARK BLUE LOGIN CARD
+========================================= */
+
+.login-card {
+  width: 100% !important;
+  max-width: 430px !important;
+
+  background: #0b2147 !important;
+
+  border: 1px solid #1d4275 !important;
+
+  border-radius: 20px !important;
+
+  padding: 42px !important;
+
+  box-sizing: border-box !important;
+
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.55),
+    0 0 40px rgba(37, 99, 235, 0.20) !important;
+}
+
+
+/* =========================================
+   IPL LOGO
+========================================= */
+
+.login-logo {
+  width: 68px !important;
+  height: 68px !important;
+
+  border-radius: 16px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 auto 24px !important;
+
+  background: #2563eb !important;
+
+  color: #ffffff !important;
+
+  font-size: 22px !important;
+  font-weight: 800 !important;
+
+  letter-spacing: 1px !important;
+
+  box-shadow:
+    0 8px 25px rgba(37, 99, 235, 0.45) !important;
+}
+
+
+/* =========================================
+   HEADING
+========================================= */
+
+.login-heading {
+  text-align: center !important;
+
+  margin-bottom: 30px !important;
+}
+
+.login-heading h1 {
+  margin: 0 0 10px !important;
+
+  color: #ffffff !important;
+
+  font-size: 30px !important;
+  font-weight: 800 !important;
+}
+
+.login-heading p {
+  margin: 0 !important;
+
+  color: #9db5d9 !important;
+
+  font-size: 14px !important;
+
+  line-height: 1.6 !important;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.login-form {
+  display: flex !important;
+
+  flex-direction: column !important;
+
+  gap: 20px !important;
+}
+
+
+/* =========================================
+   FORM GROUP
+========================================= */
+
+.form-group {
+  display: flex !important;
+
+  flex-direction: column !important;
+
+  gap: 8px !important;
+}
+
+.form-group label {
+  color: #dbeafe !important;
+
+  font-size: 14px !important;
+
+  font-weight: 700 !important;
+}
+
+
+/* =========================================
+   INPUT
+========================================= */
+
+.form-group input {
+  width: 100% !important;
+
+  height: 50px !important;
+
+  padding: 0 15px !important;
+
+  box-sizing: border-box !important;
+
+  border: 1px solid #315789 !important;
+
+  border-radius: 10px !important;
+
+  background: #102d5a !important;
+
+  color: #ffffff !important;
+
+  font-size: 15px !important;
+
+  outline: none !important;
+
+  transition: all 0.2s ease !important;
+}
+
+
+/* Placeholder */
+
+.form-group input::placeholder {
+  color: #7892b8 !important;
+}
+
+
+/* Focus */
+
+.form-group input:focus {
+  border-color: #3b82f6 !important;
+
+  background: #15396d !important;
+
+  color: #ffffff !important;
+
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.20) !important;
+}
+
+
+/* Disabled */
+
+.form-group input:disabled {
+  background: #0d254b !important;
+
+  color: #9db5d9 !important;
+
+  cursor: not-allowed !important;
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.login-error {
+  padding: 12px 14px !important;
+
+  border-radius: 9px !important;
+
+  background: #3a1b2b !important;
+
+  border: 1px solid #7f3345 !important;
+
+  color: #fca5a5 !important;
+
+  font-size: 13px !important;
+
+  line-height: 1.5 !important;
+}
+
+
+/* =========================================
+   SIGN IN BUTTON
+========================================= */
+
+.login-button {
+  width: 100% !important;
+
+  height: 50px !important;
+
+  border: none !important;
+
+  border-radius: 10px !important;
+
+  background: #2563eb !important;
+
+  color: #020716 !important;
+
+  font-size: 15px !important;
+
+  font-weight: 700 !important;
+
+  cursor: pointer !important;
+
+  transition: all 0.2s ease !important;
+
+  box-shadow:
+    0 8px 20px rgba(37, 99, 235, 0.35) !important;
+}
+
+
+/* Hover */
+
+.login-button:hover {
+  background: #3b82f6 !important;
+
+  transform: translateY(-1px) !important;
+
+  box-shadow:
+    0 12px 25px rgba(37, 99, 235, 0.45) !important;
+}
+
+
+/* Click */
+
+.login-button:active {
+  transform: translateY(0) !important;
+}
+
+
+/* Disabled */
+
+.login-button:disabled {
+  background: #315789 !important;
+
+  opacity: 0.65 !important;
+
+  cursor: not-allowed !important;
+
+  transform: none !important;
+
+  box-shadow: none !important;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.login-footer {
+  text-align: center !important;
+
+  margin-top: 28px !important;
+
+  color: #7892b8 !important;
+
+  font-size: 12px !important;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 500px) {
+
+  .login-page {
+    padding: 16px !important;
+  }
+
+  .login-card {
+    padding: 30px 22px !important;
+
+    border-radius: 16px !important;
+  }
+
+  .login-heading h1 {
+    font-size: 26px !important;
+  }
+
+}
