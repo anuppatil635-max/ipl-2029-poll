@@ -21,8 +21,7 @@ function AdminLogin({ onLogin }) {
 
     try {
       const loginResponse = await fetch(
-        "/api/admin/login/",
-        {
+        `${import.meta.env.VITE_API_URL}/api/admin/login/`,{
           method: "POST",
           credentials: "include",
           headers: {
@@ -50,7 +49,7 @@ function AdminLogin({ onLogin }) {
        * Check Django session immediately.
        */
       const sessionResponse = await fetch(
-        "/api/admin/me/",
+        `${import.meta.env.VITE_API_URL}/api/admin/me/`,
         {
           method: "GET",
           credentials: "include",

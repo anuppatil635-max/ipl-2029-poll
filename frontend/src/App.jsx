@@ -72,7 +72,9 @@ function PublicPoll() {
 
       try {
 
-        const response = await fetch("/api/poll/");
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/poll/`
+        );
 
 
 
@@ -337,8 +339,7 @@ function PublicPoll() {
 
 
       const response = await fetch(
-
-        "/api/submit/",
+        `${import.meta.env.VITE_API_URL}/api/submit/`,
 
         {
 
@@ -1168,7 +1169,7 @@ function App() {
 
         const response = await fetch(
 
-          "/api/admin/me/",
+          `${import.meta.env.VITE_API_URL}/api/admin/me/`,
 
           {
 
@@ -1303,7 +1304,7 @@ function App() {
       const csrfToken = getCsrfToken();
 
       const response = await fetch(
-        "/api/admin/logout/",
+        `${import.meta.env.VITE_API_URL}/api/admin/logout/`,
         {
           method: "POST",
           credentials: "include",

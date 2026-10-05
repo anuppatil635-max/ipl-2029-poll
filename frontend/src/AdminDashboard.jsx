@@ -102,7 +102,7 @@ function AdminDashboard({ username, onLogout }) {
 
       const response = await fetch(
 
-        "/api/admin/participants/",
+        `${import.meta.env.VITE_API_URL}/api/admin/participants/`,
 
         {
 
@@ -190,7 +190,7 @@ function AdminDashboard({ username, onLogout }) {
 
       const response = await fetch(
 
-        "/api/admin/poll/status/",
+        `${import.meta.env.VITE_API_URL}/api/admin/poll/status/`,
 
         {
 
@@ -320,7 +320,7 @@ function AdminDashboard({ username, onLogout }) {
 
       const response = await fetch(
 
-        "/api/admin/poll/toggle/",
+        `${import.meta.env.VITE_API_URL}/api/admin/poll/toggle/`,
 
         {
 
@@ -466,7 +466,7 @@ function AdminDashboard({ username, onLogout }) {
 
       const response = await fetch(
 
-        `/api/admin/participants/${participant.id}/`,
+        `${import.meta.env.VITE_API_URL}/api/admin/participants/${participant.id}/`,
 
         {
 

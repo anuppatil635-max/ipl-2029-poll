@@ -15,8 +15,9 @@ function Poll() {
   useEffect(() => {
     const loadPoll = async () => {
       try {
-        const response = await fetch("/api/poll/");
-
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/poll/`
+        );
         const data = await response.json();
 
         if (!response.ok) {
@@ -132,7 +133,9 @@ function Poll() {
     setError("");
 
     try {
-      const response = await fetch("/api/submit/", {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/submit/`,
+        {
         method: "POST",
         credentials: "include",
         headers: {

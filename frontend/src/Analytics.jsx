@@ -22,7 +22,8 @@ function Analytics({ username, onLogout }) {
 
       setError("");
 
-      const response = await fetch("/api/admin/analytics/", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/analytics/`, 
+        {
 
         method: "GET",
 
