@@ -1,24 +1,48 @@
 import { useEffect, useState } from "react";
 
+
+
 import {
+
+
 
   BrowserRouter,
 
+
+
   Routes,
+
+
 
   Route,
 
+
+
   Navigate,
+
+
 
 } from "react-router-dom";
 
 
 
+
+
+
+
 import AdminLogin from "./AdminLogin";
+
+
 
 import AdminDashboard from "./AdminDashboard";
 
+
+
 import Analytics from "./Analytics";
+
+
+
+
 
 
 
@@ -28,11 +52,25 @@ import "./App.css";
 
 
 
+
+
+
+
+
+
 function PublicPoll() {
+
+
 
   const [poll, setPoll] = useState(null);
 
+
+
   const [name, setName] = useState("");
+
+
+
+
 
 
 
@@ -40,15 +78,31 @@ function PublicPoll() {
 
 
 
+
+
+
+
   const [started, setStarted] = useState(false);
+
+
 
   const [submitted, setSubmitted] = useState(false);
 
 
 
+
+
+
+
   const [loading, setLoading] = useState(true);
 
+
+
   const [submitting, setSubmitting] = useState(false);
+
+
+
+
 
 
 
@@ -58,31 +112,65 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // LOAD POLL
 
+
+
   // =====================================================
+
+
+
+
 
 
 
   useEffect(() => {
 
+
+
     const loadPoll = async () => {
+
+
 
       try {
 
+
+
         const response = await fetch(
+
           `${import.meta.env.VITE_API_URL}/api/poll/`
+
         );
+
+
+
+
 
 
 
         if (!response.ok) {
 
+
+
           throw new Error("Unable to load poll.");
 
+
+
         }
+
+
+
+
 
 
 
@@ -90,31 +178,61 @@ function PublicPoll() {
 
 
 
+
+
+
+
         setPoll(data);
 
+
+
       } catch (error) {
+
+
 
         console.error("Poll loading error:", error);
 
 
 
+
+
+
+
         setError(
+
+
 
           "Unable to load the poll. Please try again."
 
+
+
         );
+
+
 
       } finally {
 
+
+
         setLoading(false);
 
+
+
       }
+
+
 
     };
 
 
 
+
+
+
+
     loadPoll();
+
+
 
   }, []);
 
@@ -122,27 +240,57 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // START PREDICTION
 
+
+
   // =====================================================
+
+
+
+
 
 
 
   const startPrediction = () => {
 
+
+
     setError("");
+
+
+
+
 
 
 
     if (!name.trim()) {
 
+
+
       setError("Please enter your name.");
+
+
 
       return;
 
+
+
     }
+
+
+
+
 
 
 
@@ -150,13 +298,25 @@ function PublicPoll() {
 
 
 
+
+
+
+
     window.scrollTo({
+
+
 
       top: 0,
 
+
+
       behavior: "smooth",
 
+
+
     });
+
+
 
   };
 
@@ -164,33 +324,69 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // SELECT / UNSELECT MULTIPLE OPTIONS
 
+
+
   // =====================================================
+
+
+
+
 
 
 
   const handleOptionChange = (
 
+
+
     questionId,
+
+
 
     optionId
 
+
+
   ) => {
+
+
 
     setAnswers((currentAnswers) => {
 
+
+
       const currentOptions =
+
+
 
         currentAnswers[questionId] || [];
 
 
 
+
+
+
+
       const alreadySelected =
 
+
+
         currentOptions.includes(optionId);
+
+
+
+
 
 
 
@@ -198,41 +394,81 @@ function PublicPoll() {
 
 
 
+
+
+
+
       if (alreadySelected) {
+
+
 
         updatedOptions = currentOptions.filter(
 
+
+
           (id) => id !== optionId
+
+
 
         );
 
+
+
       } else {
+
+
 
         updatedOptions = [
 
+
+
           ...currentOptions,
+
+
 
           optionId,
 
+
+
         ];
+
+
 
       }
 
 
 
+
+
+
+
       return {
+
+
 
         ...currentAnswers,
 
+
+
         [questionId]: updatedOptions,
 
+
+
       };
+
+
 
     });
 
 
 
+
+
+
+
     setError("");
+
+
 
   };
 
@@ -240,17 +476,37 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // SUBMIT POLL
 
+
+
   // =====================================================
+
+
+
+
 
 
 
   const handleSubmit = async (event) => {
 
+
+
     event.preventDefault();
+
+
+
+
 
 
 
@@ -258,23 +514,49 @@ function PublicPoll() {
 
 
 
+
+
+
+
     if (!name.trim()) {
+
+
 
       setError("Please enter your name.");
 
+
+
       return;
 
+
+
     }
+
+
+
+
 
 
 
     if (!poll || !poll.questions) {
 
+
+
       setError("Poll data is not available.");
+
+
 
       return;
 
+
+
     }
+
+
+
+
+
+
 
 
 
@@ -282,27 +564,51 @@ function PublicPoll() {
 
     // Check every question has at least one answer
 
+
+
     for (const question of poll.questions) {
 
+
+
       const selectedOptions =
+
+
 
         answers[question.id] || [];
 
 
 
+
+
+
+
       if (selectedOptions.length === 0) {
+
+
 
         setError(
 
+
+
           `Please answer Question ${question.order}.`
+
+
 
         );
 
 
 
+
+
+
+
         return;
 
+
+
       }
+
+
 
     }
 
@@ -310,19 +616,39 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
     // Create response format required by Django
+
+
 
     const responses = poll.questions.map(
 
+
+
       (question) => ({
+
+
 
         question_id: question.id,
 
+
+
         option_ids:
+
+
 
           answers[question.id] || [],
 
+
+
       })
+
+
 
     );
 
@@ -330,7 +656,15 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
     try {
+
+
 
       setSubmitting(true);
 
@@ -338,34 +672,73 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
       const response = await fetch(
+
         `${import.meta.env.VITE_API_URL}/api/submit/`,
 
+
+
         {
+
+
 
           method: "POST",
 
 
 
+
+
+
+
           headers: {
 
+
+
             "Content-Type": "application/json",
+
+
 
           },
 
 
 
+
+
+
+
           body: JSON.stringify({
+
+
 
             name: name.trim(),
 
+
+
             responses: responses,
+
+
 
           }),
 
+
+
         }
 
+
+
       );
+
+
+
+
+
+
 
 
 
@@ -377,15 +750,31 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
       if (!response.ok) {
+
+
 
         throw new Error(
 
+
+
           data.message ||
+
+
 
             "Unable to submit the poll."
 
+
+
         );
+
+
 
       }
 
@@ -393,17 +782,35 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
       // SUCCESS
+
+
 
       setSubmitted(true);
 
 
 
+
+
+
+
       window.scrollTo({
+
+
 
         top: 0,
 
+
+
         behavior: "smooth",
+
+
 
       });
 
@@ -411,33 +818,67 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
     } catch (error) {
+
+
 
       console.error(
 
+
+
         "Submit poll error:",
+
+
 
         error
 
+
+
       );
+
+
+
+
 
 
 
       setError(
 
+
+
         error.message ||
 
+
+
           "Something went wrong while submitting."
+
+
 
       );
 
 
 
+
+
+
+
     } finally {
+
+
 
       setSubmitting(false);
 
+
+
     }
+
+
 
   };
 
@@ -445,25 +886,51 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // LOADING
 
+
+
   // =====================================================
+
+
+
+
 
 
 
   if (loading) {
 
+
+
     return (
+
+
 
       <div className="public-loading">
 
+
+
         Loading IPL 2029 Poll...
+
+
 
       </div>
 
+
+
     );
+
+
 
   }
 
@@ -471,39 +938,83 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // THANK YOU PAGE
 
+
+
   // =====================================================
+
+
+
+
 
 
 
   if (submitted) {
 
+
+
     return (
+
+
 
       <div className="public-page">
 
 
 
+
+
+
+
         <header className="public-topbar">
+
+
 
           <div className="brand">
 
+
+
             IPL <span>2029</span>
 
+
+
           </div>
+
+
+
+
 
 
 
           <div className="poll-label">
 
+
+
             PREDICTION POLL
+
+
 
           </div>
 
+
+
         </header>
+
+
+
+
+
+
 
 
 
@@ -513,55 +1024,111 @@ function PublicPoll() {
 
 
 
+
+
+
+
           <div className="thank-you-card">
+
+
+
+
 
 
 
             <div className="trophy">
 
+
+
               🏆
 
+
+
             </div>
+
+
+
+
 
 
 
             <div className="small-title">
 
+
+
               IPL 2029
 
+
+
             </div>
+
+
+
+
 
 
 
             <h1>
 
+
+
               Thank You,{" "}
 
+
+
               <span>{name.trim()}</span>!
+
+
 
             </h1>
 
 
 
+
+
+
+
             <p className="thank-you-text">
+
+
 
               Your IPL 2029 prediction has been
 
+
+
               successfully submitted.
+
+
 
             </p>
 
 
 
+
+
+
+
             <div className="success-box">
 
+
+
               ✓ Your response has been saved
+
+
 
             </div>
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -571,17 +1138,35 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
         <footer className="public-footer">
 
+
+
           IPL 2029 • Prediction Poll
+
+
 
         </footer>
 
 
 
+
+
+
+
       </div>
 
+
+
     );
+
+
 
   }
 
@@ -589,19 +1174,41 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // START PAGE
 
+
+
   // =====================================================
+
+
+
+
 
 
 
   if (!started) {
 
+
+
     return (
 
+
+
       <div className="public-page">
+
+
+
+
 
 
 
@@ -609,19 +1216,39 @@ function PublicPoll() {
 
 
 
+
+
+
+
           <div className="brand">
+
+
 
             IPL <span>2029</span>
 
+
+
           </div>
+
+
+
+
 
 
 
           <div className="poll-label">
 
+
+
             PREDICTION POLL
 
+
+
           </div>
+
+
+
+
 
 
 
@@ -631,7 +1258,17 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
         <main className="public-card">
+
+
+
+
 
 
 
@@ -639,19 +1276,41 @@ function PublicPoll() {
 
 
 
+
+
+
+
             <div className="trophy">
+
+
 
               🏆
 
+
+
             </div>
+
+
+
+
 
 
 
             <div className="small-title">
 
+
+
               IPL 2029
 
+
+
             </div>
+
+
+
+
+
+
 
 
 
@@ -659,11 +1318,19 @@ function PublicPoll() {
 
             <h1>
 
+
+
               Who will rule
+
+
 
               <br />
 
+
+
               <span>IPL 2029?</span>
+
+
 
             </h1>
 
@@ -671,13 +1338,31 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
             <p>
+
+
 
               Share your prediction and tell us
 
+
+
               what you think will decide IPL 2029.
 
+
+
             </p>
+
+
+
+
+
+
 
 
 
@@ -687,45 +1372,91 @@ function PublicPoll() {
 
 
 
+
+
+
+
               <input
+
+
 
                 type="text"
 
+
+
                 placeholder="Enter your name"
+
+
 
                 value={name}
 
+
+
                 onChange={(event) =>
+
+
 
                   setName(event.target.value)
 
+
+
                 }
+
+
 
                 onKeyDown={(event) => {
 
+
+
                   if (event.key === "Enter") {
+
+
 
                     startPrediction();
 
+
+
                   }
 
+
+
                 }}
+
+
 
               />
 
 
 
+
+
+
+
               <button
+
+
 
                 type="button"
 
+
+
                 onClick={startPrediction}
+
+
 
               >
 
+
+
                 START PREDICTION →
 
+
+
               </button>
+
+
+
+
 
 
 
@@ -735,19 +1466,41 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
             {error && (
+
+
 
               <div className="public-error">
 
+
+
                 {error}
 
+
+
               </div>
+
+
 
             )}
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -757,17 +1510,35 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
         <footer className="public-footer">
 
+
+
           IPL 2029 • Prediction Poll
+
+
 
         </footer>
 
 
 
+
+
+
+
       </div>
 
+
+
     );
+
+
 
   }
 
@@ -775,17 +1546,37 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // QUESTION PAGE
 
+
+
   // =====================================================
+
+
+
+
 
 
 
   return (
 
+
+
     <div className="question-page">
+
+
+
+
 
 
 
@@ -793,39 +1584,81 @@ function PublicPoll() {
 
 
 
+
+
+
+
         <div>
+
+
+
+
 
 
 
           <div className="question-brand">
 
+
+
             IPL <span>2029</span>
+
+
 
           </div>
 
 
 
+
+
+
+
           <h1>
 
+
+
             Prediction Poll
+
+
 
           </h1>
 
 
 
+
+
+
+
           <p>
+
+
 
             Welcome,{" "}
 
+
+
             <strong>{name.trim()}</strong>
 
+
+
             . Select your answers below.
+
+
 
           </p>
 
 
 
+
+
+
+
         </div>
+
+
+
+
+
+
 
 
 
@@ -833,9 +1666,17 @@ function PublicPoll() {
 
         <div className="question-count">
 
+
+
           {poll.questions.length} Questions
 
+
+
         </div>
+
+
+
+
 
 
 
@@ -845,7 +1686,17 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
       <main className="questions-container">
+
+
+
+
 
 
 
@@ -853,33 +1704,69 @@ function PublicPoll() {
 
 
 
+
+
+
+
           {poll.questions.map(
+
+
 
             (question, questionIndex) => (
 
 
 
+
+
+
+
               <div
+
+
 
                 className="question-card"
 
+
+
                 key={question.id}
+
+
 
               >
 
 
 
+
+
+
+
                 <div className="question-number">
+
+
 
                   QUESTION{" "}
 
+
+
                   {String(
+
+
 
                     questionIndex + 1
 
+
+
                   ).padStart(2, "0")}
 
+
+
                 </div>
+
+
+
+
+
+
 
 
 
@@ -887,7 +1774,11 @@ function PublicPoll() {
 
                 <h2>
 
+
+
                   {question.text}
+
+
 
                 </h2>
 
@@ -895,11 +1786,27 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
                 <div className="multiple-hint">
+
+
 
                   Select one or more options
 
+
+
                 </div>
+
+
+
+
+
+
 
 
 
@@ -909,25 +1816,49 @@ function PublicPoll() {
 
 
 
+
+
+
+
                   {question.options.map(
+
+
 
                     (option) => {
 
 
 
+
+
+
+
                       const selected =
+
+
 
                         (
 
+
+
                           answers[
+
+
 
                             question.id
 
+
+
                           ] || []
+
+
 
                         ).includes(
 
+
+
                           option.id
+
+
 
                         );
 
@@ -935,43 +1866,87 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
                       return (
+
+
 
                         <label
 
+
+
                           key={option.id}
+
+
 
                           className={
 
+
+
                             selected
+
+
 
                               ? "option-card selected"
 
+
+
                               : "option-card"
 
+
+
                           }
+
+
 
                         >
 
 
 
+
+
+
+
                           <input
+
+
 
                             type="checkbox"
 
+
+
                             checked={selected}
+
+
 
                             onChange={() =>
 
+
+
                               handleOptionChange(
+
+
 
                                 question.id,
 
+
+
                                 option.id
+
+
 
                               )
 
+
+
                             }
+
+
 
                           />
 
@@ -979,15 +1954,35 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
                           <span className="custom-checkbox">
+
+
 
                             {selected
 
+
+
                               ? "✓"
+
+
 
                               : ""}
 
+
+
                           </span>
+
+
+
+
+
+
 
 
 
@@ -995,21 +1990,41 @@ function PublicPoll() {
 
                           <span className="option-text">
 
+
+
                             {option.text}
+
+
 
                           </span>
 
 
 
+
+
+
+
                         </label>
+
+
 
                       );
 
 
 
+
+
+
+
                     }
 
+
+
                   )}
+
+
+
+
 
 
 
@@ -1017,13 +2032,29 @@ function PublicPoll() {
 
 
 
+
+
+
+
               </div>
+
+
+
+
 
 
 
             )
 
+
+
           )}
+
+
+
+
+
+
 
 
 
@@ -1031,13 +2062,27 @@ function PublicPoll() {
 
           {error && (
 
+
+
             <div className="submit-error">
+
+
 
               {error}
 
+
+
             </div>
 
+
+
           )}
+
+
+
+
+
+
 
 
 
@@ -1047,23 +2092,47 @@ function PublicPoll() {
 
 
 
+
+
+
+
             <button
+
+
 
               type="submit"
 
+
+
               className="submit-poll-button"
 
+
+
               disabled={submitting}
+
+
 
             >
 
 
 
+
+
+
+
               {submitting
+
+
 
                 ? "SUBMITTING..."
 
+
+
                 : "SUBMIT PREDICTION →"}
+
+
+
+
 
 
 
@@ -1071,11 +2140,23 @@ function PublicPoll() {
 
 
 
+
+
+
+
           </div>
 
 
 
+
+
+
+
         </form>
+
+
+
+
 
 
 
@@ -1085,17 +2166,35 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
       <footer className="public-footer">
 
+
+
         IPL 2029 • Prediction Poll
+
+
 
       </footer>
 
 
 
+
+
+
+
     </div>
 
+
+
   );
+
+
 
 }
 
@@ -1103,43 +2202,87 @@ function PublicPoll() {
 
 
 
+
+
+
+
+
+
 // =====================================================
+
+
 
 // MAIN APP
 
+
+
 // =====================================================
+
+
+
+
+
 
 
 
 
 const getCsrfToken = () => {
+
   const cookies = document.cookie.split(";");
 
+
+
   for (let cookie of cookies) {
+
     cookie = cookie.trim();
 
+
+
     if (cookie.startsWith("csrftoken=")) {
+
       return decodeURIComponent(
+
         cookie.substring("csrftoken=".length)
+
       );
+
     }
+
   }
 
+
+
   return null;
+
 };
+
+
+
 
 
 function App() {
 
 
 
+
+
+
+
   const [adminUser, setAdminUser] =
+
+
 
     useState(null);
 
 
 
+
+
+
+
   const [checkingSession, setCheckingSession] =
+
+
 
     useState(true);
 
@@ -1147,11 +2290,25 @@ function App() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // CHECK ADMIN SESSION
 
+
+
   // =====================================================
+
+
+
+
 
 
 
@@ -1159,7 +2316,15 @@ function App() {
 
 
 
+
+
+
+
     const checkAdminSession = async () => {
+
+
+
+
 
 
 
@@ -1167,19 +2332,41 @@ function App() {
 
 
 
+
+
+
+
         const response = await fetch(
+
+
 
           `${import.meta.env.VITE_API_URL}/api/admin/me/`,
 
+
+
           {
+
+
 
             method: "GET",
 
+
+
             credentials: "include",
+
+
 
           }
 
+
+
         );
+
+
+
+
+
+
 
 
 
@@ -1189,17 +2376,35 @@ function App() {
 
 
 
+
+
+
+
           const data =
+
+
 
             await response.json();
 
 
 
+
+
+
+
           setAdminUser(
+
+
 
             data.username
 
+
+
           );
+
+
+
+
 
 
 
@@ -1207,7 +2412,15 @@ function App() {
 
 
 
+
+
+
+
           setAdminUser(null);
+
+
+
+
 
 
 
@@ -1215,17 +2428,35 @@ function App() {
 
 
 
+
+
+
+
       } catch (error) {
+
+
+
+
 
 
 
         console.error(
 
+
+
           "Session check error:",
+
+
 
           error
 
+
+
         );
+
+
+
+
 
 
 
@@ -1233,7 +2464,15 @@ function App() {
 
 
 
+
+
+
+
       } finally {
+
+
+
+
 
 
 
@@ -1241,7 +2480,15 @@ function App() {
 
 
 
+
+
+
+
       }
+
+
+
+
 
 
 
@@ -1251,7 +2498,17 @@ function App() {
 
 
 
+
+
+
+
+
+
     checkAdminSession();
+
+
+
+
 
 
 
@@ -1261,11 +2518,25 @@ function App() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // ADMIN LOGIN
 
+
+
   // =====================================================
+
+
+
+
 
 
 
@@ -1273,76 +2544,153 @@ function App() {
 
 
 
+
+
+
+
     setAdminUser(username);
+
+
+
+
 
 
 
     window.location.replace(
 
+
+
       "/admin/dashboard"
+
+
 
     );
 
 
 
+
+
+
+
   };
 
 
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // ADMIN LOGOUT
 
+
+
   // =====================================================
+
+
+
+
 
 
 
   const handleLogout = async () => {
+
     try {
+
       const csrfToken = getCsrfToken();
 
+
+
       const response = await fetch(
+
         `${import.meta.env.VITE_API_URL}/api/admin/logout/`,
+
         {
+
           method: "POST",
+
           credentials: "include",
+
           headers: {
+
             "X-CSRFToken": csrfToken || "",
+
           },
+
         }
+
       );
+
+
 
       if (!response.ok) {
+
         console.error(
+
           "Logout request failed:",
+
           response.status
+
         );
+
       }
+
     } catch (error) {
+
       console.error(
+
         "Logout error:",
+
         error
+
       );
+
     }
 
+
+
     // Clear frontend admin state
+
     setAdminUser(null);
 
+
+
     // Force the browser back to the admin login page
-    window.location.replace("/admin");
+
+    window.location.replace("/admin?logout=1");
+
   };
 
 
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // SESSION LOADING
 
+
+
   // =====================================================
+
+
+
+
 
 
 
@@ -1350,37 +2698,75 @@ function App() {
 
 
 
+
+
+
+
     return (
+
+
 
       <div
 
+
+
         style={{
+
+
 
           minHeight: "100vh",
 
+
+
           display: "flex",
+
+
 
           alignItems: "center",
 
+
+
           justifyContent: "center",
+
+
 
           fontFamily:
 
+
+
             "Arial, sans-serif",
+
+
 
           background: "#07102f",
 
+
+
           color: "white",
+
+
 
         }}
 
+
+
       >
+
+
 
         Checking...
 
+
+
       </div>
 
+
+
     );
+
+
+
+
 
 
 
@@ -1390,11 +2776,25 @@ function App() {
 
 
 
+
+
+
+
+
+
   // =====================================================
+
+
 
   // ROUTES
 
+
+
   // =====================================================
+
+
+
+
 
 
 
@@ -1402,7 +2802,15 @@ function App() {
 
 
 
+
+
+
+
     <BrowserRouter>
+
+
+
+
 
 
 
@@ -1410,95 +2818,125 @@ function App() {
 
 
 
+
+
+
+
         {/* PUBLIC POLL */}
 
 
 
+
+
+
+
         <Route
+
+
 
           path="/"
 
+
+
           element={<PublicPoll />}
 
+
+
         />
 
 
 
 
 
-        {/* ADMIN LOGIN */}
 
 
+
+
+
+
+        {/* ADMIN LOGIN — ALWAYS SHOW LOGIN PAGE */}
 
         <Route
-
           path="/admin"
-
-          element={
-
-            adminUser ? (
-
-              <Navigate
-
-                to="/admin/dashboard"
-
-                replace
-
-              />
-
-            ) : (
-
-              <AdminLogin
-
-                onLogin={handleLogin}
-
-              />
-
-            )
-
-          }
-
+          element={<AdminLogin onLogin={handleLogin} />}
         />
-
-
-
 
 
         {/* ADMIN DASHBOARD */}
 
 
 
+
+
+
+
         <Route
+
+
 
           path="/admin/dashboard"
 
+
+
           element={
+
+
 
             adminUser ? (
 
+
+
               <AdminDashboard
+
+
 
                 username={adminUser}
 
+
+
                 onLogout={handleLogout}
 
+
+
               />
+
+
 
             ) : (
 
+
+
               <Navigate
+
+
 
                 to="/admin"
 
+
+
                 replace
+
+
 
               />
 
+
+
             )
+
+
 
           }
 
+
+
         />
+
+
+
+
+
+
 
 
 
@@ -1508,37 +2946,77 @@ function App() {
 
 
 
+
+
+
+
         <Route
+
+
 
           path="/admin/analytics"
 
+
+
           element={
+
+
 
             adminUser ? (
 
+
+
               <Analytics
+
+
 
                 username={adminUser}
 
+
+
                 onLogout={handleLogout}
 
+
+
               />
+
+
 
             ) : (
 
+
+
               <Navigate
+
+
 
                 to="/admin"
 
+
+
                 replace
+
+
 
               />
 
+
+
             )
+
+
 
           }
 
+
+
         />
+
+
+
+
+
+
 
 
 
@@ -1548,23 +3026,47 @@ function App() {
 
 
 
+
+
+
+
         <Route
+
+
 
           path="*"
 
+
+
           element={
+
+
 
             <Navigate
 
+
+
               to="/"
+
+
 
               replace
 
+
+
             />
+
+
 
           }
 
+
+
         />
+
+
+
+
 
 
 
@@ -1572,13 +3074,29 @@ function App() {
 
 
 
+
+
+
+
     </BrowserRouter>
+
+
+
+
 
 
 
   );
 
+
+
 }
+
+
+
+
+
+
 
 
 
