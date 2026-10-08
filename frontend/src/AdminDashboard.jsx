@@ -2,7 +2,19 @@ import { useEffect, useState } from "react";
 
 
 
+
+
+
+
 import { useNavigate } from "react-router-dom";
+
+
+
+
+
+
+
+
 
 
 
@@ -18,7 +30,19 @@ import "./AdminDashboard.css";
 
 
 
+
+
+
+
+
+
+
+
 function AdminDashboard({ username, onLogout }) {
+
+
+
+
 
 
 
@@ -30,7 +54,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
   const [participants, setParticipants] = useState([]);
+
+
+
+
 
 
 
@@ -38,7 +74,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
   const [selectedParticipant, setSelectedParticipant] =
+
+
+
+
 
 
 
@@ -50,7 +94,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
   const [searchTerm, setSearchTerm] = useState("");
+
+
+
+
 
 
 
@@ -62,7 +118,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
   const [pollStatus, setPollStatus] = useState(null);
+
+
+
+
 
 
 
@@ -74,7 +142,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
   const [deletingId, setDeletingId] = useState(null);
+
+
+
+
 
 
 
@@ -86,81 +166,94 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
   // ==========================================
+
+
+
+
 
 
 
   // CSRF TOKEN
+// ==========================================
 
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  const getCsrfToken = () => {
-    const cookies = document.cookie.split(";");
-
-    for (let cookie of cookies) {
-      cookie = cookie.trim();
-
-      if (cookie.startsWith("csrftoken=")) {
-        return decodeURIComponent(
-          cookie.substring("csrftoken=".length)
-        );
+// IMPORTANT:
+// In production the React frontend and Django backend use different origins.
+// Do NOT read Django's csrftoken from document.cookie.
+// Django returns the CSRF token directly from the authenticated /api/admin/me/ endpoint.
+const fetchCsrfToken = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/admin/me/`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
       }
-    }
+    );
 
-    return null;
-  };
-
-  const fetchCsrfToken = async () => {
-    let token = getCsrfToken();
-
-    if (token) return token;
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/admin/me/`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
+    if (!response.ok) {
+      console.error(
+        "Unable to get CSRF token. Admin session status:",
+        response.status
       );
-
-      try {
-        const data = await response.json();
-
-        if (data?.csrfToken) {
-          return data.csrfToken;
-        }
-      } catch {
-        // Ignore non-JSON response.
-      }
-    } catch (error) {
-      console.error("CSRF token request error:", error);
+      return null;
     }
 
-    return getCsrfToken();
-  };
+    const data = await response.json();
+
+    if (data?.csrfToken) {
+      return data.csrfToken;
+    }
+
+    console.error("Admin session response did not contain csrfToken.");
+    return null;
+  } catch (error) {
+    console.error("CSRF token request error:", error);
+    return null;
+  }
+};
+
+// ==========================================
+// FETCH PARTICIPANTS
+// ==========================================
+
 
   // ==========================================
-  // FETCH PARTICIPANTS
-  // ==========================================
+
+
 
   const fetchParticipants = async () => {
 
 
 
+
+
+
+
     try {
 
 
 
+
+
+
+
       setLoading(true);
+
+
+
+
 
 
 
@@ -172,7 +265,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
       const response = await fetch(
+
+
+
+
 
 
 
@@ -180,7 +285,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         {
+
+
+
+
 
 
 
@@ -188,11 +301,23 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
           credentials: "include",
 
 
 
+
+
+
+
         }
+
+
+
+
 
 
 
@@ -204,7 +329,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
       if (!response.ok) {
+
+
+
+
 
 
 
@@ -212,7 +349,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
           setError(
+
+
+
+
 
 
 
@@ -220,11 +365,23 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
           );
 
 
 
+
+
+
+
           return;
+
+
+
+
 
 
 
@@ -236,7 +393,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
         throw new Error(
+
+
+
+
 
 
 
@@ -244,7 +413,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         );
+
+
+
+
 
 
 
@@ -256,7 +433,23 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
       const data = await response.json();
+
+
+
+
+
+
+
+
 
 
 
@@ -268,7 +461,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
     } catch (error) {
+
+
+
+
 
 
 
@@ -276,7 +477,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         "Participants fetch error:",
+
+
+
+
 
 
 
@@ -284,7 +493,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
       );
+
+
+
+
+
+
+
+
 
 
 
@@ -296,7 +517,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         "Unable to load participants."
+
+
+
+
 
 
 
@@ -304,7 +533,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
     } finally {
+
+
+
+
 
 
 
@@ -312,7 +549,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -324,7 +569,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
   // ==========================================
+
+
+
+
 
 
 
@@ -332,7 +589,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
   // ==========================================
+
+
+
+
+
+
+
+
 
 
 
@@ -344,7 +613,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
     try {
+
+
+
+
 
 
 
@@ -352,7 +629,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         `${import.meta.env.VITE_API_URL}/api/admin/poll/status/`,
+
+
+
+
 
 
 
@@ -360,7 +645,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
           method: "GET",
+
+
+
+
 
 
 
@@ -368,7 +661,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         }
+
+
+
+
 
 
 
@@ -380,7 +681,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
       if (!response.ok) {
+
+
+
+
 
 
 
@@ -388,7 +701,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
           "Failed to fetch poll status."
+
+
+
+
 
 
 
@@ -396,7 +717,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
       }
+
+
+
+
+
+
+
+
 
 
 
@@ -412,7 +745,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
       setPollStatus(data);
+
+
+
+
 
 
 
@@ -420,7 +765,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
       console.error(
+
+
+
+
 
 
 
@@ -428,7 +781,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         error
+
+
+
+
 
 
 
@@ -436,7 +797,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -448,7 +817,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
   // ==========================================
+
+
+
+
 
 
 
@@ -456,7 +837,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
   // ==========================================
+
+
+
+
+
+
+
+
 
 
 
@@ -468,11 +861,23 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
     fetchParticipants();
 
 
 
+
+
+
+
     fetchPollStatus();
+
+
+
+
 
 
 
@@ -484,7 +889,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
   // ==========================================
+
+
+
+
 
 
 
@@ -492,7 +909,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
   // ==========================================
+
+
+
+
+
+
+
+
 
 
 
@@ -504,11 +933,23 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
     fetchParticipants();
 
 
 
+
+
+
+
     fetchPollStatus();
+
+
+
+
 
 
 
@@ -520,7 +961,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
   // ==========================================
+
+
+
+
 
 
 
@@ -528,7 +981,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
   // ==========================================
+
+
+
+
+
+
+
+
 
 
 
@@ -540,7 +1005,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
     if (togglingPoll) {
+
+
+
+
 
 
 
@@ -548,7 +1021,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -564,7 +1049,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
     if (!csrfToken) {
+
+
+
+
 
 
 
@@ -572,7 +1069,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         "CSRF token not found. Please refresh the page."
+
+
+
+
 
 
 
@@ -580,7 +1085,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
       return;
+
+
+
+
 
 
 
@@ -592,11 +1105,27 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
     try {
 
 
 
+
+
+
+
       setTogglingPoll(true);
+
+
+
+
 
 
 
@@ -608,7 +1137,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
       const response = await fetch(
+
+
+
+
 
 
 
@@ -616,7 +1157,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         {
+
+
+
+
 
 
 
@@ -624,7 +1173,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
           credentials: "include",
+
+
+
+
 
 
 
@@ -632,7 +1189,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
             "Content-Type": "application/json",
+
+
+
+
 
 
 
@@ -640,7 +1205,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
           },
+
+
+
+
 
 
 
@@ -648,7 +1221,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
       );
+
+
+
+
+
+
+
+
 
 
 
@@ -664,7 +1249,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
       if (!response.ok) {
+
+
+
+
 
 
 
@@ -672,7 +1269,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
           data.message ||
+
+
+
+
 
 
 
@@ -680,11 +1285,27 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         );
 
 
 
+
+
+
+
       }
+
+
+
+
+
+
+
+
 
 
 
@@ -696,11 +1317,23 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         ...current,
 
 
 
+
+
+
+
         is_active: data.is_active,
+
+
+
+
 
 
 
@@ -712,7 +1345,19 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
       alert(
+
+
+
+
 
 
 
@@ -720,11 +1365,23 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
           "Poll status updated successfully."
 
 
 
+
+
+
+
       );
+
+
+
+
 
 
 
@@ -732,7 +1389,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
       console.error(
+
+
+
+
 
 
 
@@ -740,11 +1405,27 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         error
 
 
 
+
+
+
+
       );
+
+
+
+
+
+
+
+
 
 
 
@@ -756,7 +1437,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
         error.message ||
+
+
+
+
 
 
 
@@ -764,7 +1453,15 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
       );
+
+
+
+
 
 
 
@@ -772,11 +1469,23 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
       setTogglingPoll(false);
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -792,111 +1501,146 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
   // ==========================================
 
+
+
 // DELETE PARTICIPANT
+
+
 
 // ==========================================
 
 
 
+
+
+
+
 const handleDeleteParticipant = async (participant) => {
+
+
 
   const confirmDelete = window.confirm(
 
+
+
     `Are you sure you want to delete ${participant.name}?`
+
+
 
   );
 
 
 
+
+
+
+
   if (!confirmDelete) {
 
+
+
     return;
+
+
 
   }
 
 
 
+
+
+
+
   try {
+
+
 
     setDeletingId(participant.id);
 
+
+
     setError("");
 
-
-
-    let csrfToken = getCsrfToken();
-
-
-
-    /*
-
-     * If the CSRF cookie is not available yet,
-
-     * ask Django for a CSRF cookie first.
-
-     */
+    const csrfToken = await fetchCsrfToken();
 
     if (!csrfToken) {
-
-      await fetch(
-
-        `${import.meta.env.VITE_API_URL}/api/admin/me/`,
-
-        {
-
-          method: "GET",
-
-          credentials: "include",
-
-        }
-
-      );
-
-
-
-      csrfToken = getCsrfToken();
-
-    }
-
-
-
-    if (!csrfToken) {
-
       setError(
-
-        "CSRF token not found. Please refresh the page and login again."
-
+        "Unable to get the CSRF token from the admin session. Please login again."
       );
+
+
 
       return;
 
+
+
     }
+
+
+
+
 
 
 
     const response = await fetch(
 
+
+
       `${import.meta.env.VITE_API_URL}/api/admin/participants/${participant.id}/`,
+
+
 
       {
 
+
+
         method: "DELETE",
+
+
 
         credentials: "include",
 
+
+
         headers: {
+
+
 
           "X-CSRFToken": csrfToken,
 
+
+
           Accept: "application/json",
+
+
 
         },
 
+
+
       }
 
+
+
     );
+
+
+
+
 
 
 
@@ -904,119 +1648,237 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
     try {
+
+
 
       data = await response.json();
 
+
+
     } catch {
+
+
 
       data = {};
 
+
+
     }
+
+
+
+
 
 
 
     if (!response.ok) {
 
+
+
       if (response.status === 403) {
+
+
 
         throw new Error(
 
+
+
           data.detail ||
+
+
 
             data.message ||
 
+
+
             "Delete not allowed. Your admin session or CSRF token may have expired. Please login again."
+
+
 
         );
 
+
+
       }
+
+
+
+
 
 
 
       if (response.status === 404) {
 
+
+
         throw new Error(
+
+
 
           data.message || "Participant not found."
 
+
+
         );
+
+
 
       }
 
 
 
+
+
+
+
       throw new Error(
+
+
 
         data.message ||
 
+
+
           data.detail ||
+
+
 
           "Failed to delete participant."
 
+
+
       );
 
+
+
     }
+
+
+
+
 
 
 
     // Remove deleted participant immediately from the dashboard
 
+
+
     setParticipants((current) =>
+
+
 
       current.filter(
 
+
+
         (item) => Number(item.id) !== Number(participant.id)
+
+
 
       )
 
+
+
     );
+
+
+
+
 
 
 
     // Close answers modal if this participant was selected
 
+
+
     if (
+
+
 
       selectedParticipant &&
 
+
+
       Number(selectedParticipant.id) === Number(participant.id)
+
+
 
     ) {
 
+
+
       setSelectedParticipant(null);
+
+
 
     }
 
 
 
+
+
+
+
     alert(
+
+
 
       data.message ||
 
+
+
         `Participant "${participant.name}" deleted successfully.`
+
+
 
     );
 
+
+
   } catch (error) {
+
+
 
     console.error("Delete participant error:", error);
 
 
 
+
+
+
+
     setError(
+
+
 
       error.message ||
 
+
+
         "Unable to delete participant."
+
+
 
     );
 
+
+
   } finally {
+
+
 
     setDeletingId(null);
 
+
+
   }
+
+
 
 };
 
@@ -1024,7 +1886,17 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
   // ==========================================
+
+
+
+
 
 
 
@@ -1032,7 +1904,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
   // ==========================================
+
+
+
+
+
+
+
+
 
 
 
@@ -1044,11 +1928,23 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
     if (!dateString) {
 
 
 
+
+
+
+
       return "N/A";
+
+
+
+
 
 
 
@@ -1060,7 +1956,23 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
     const date = new Date(dateString);
+
+
+
+
+
+
+
+
 
 
 
@@ -1072,7 +1984,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
       "en-IN",
+
+
+
+
 
 
 
@@ -1080,7 +2000,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
         day: "2-digit",
+
+
+
+
 
 
 
@@ -1088,7 +2016,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
         year: "numeric",
+
+
+
+
 
 
 
@@ -1096,7 +2032,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
     );
+
+
+
+
 
 
 
@@ -1108,7 +2052,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
   const formatDateTime = (dateString) => {
+
+
+
+
 
 
 
@@ -1116,11 +2072,27 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
       return "N/A";
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -1136,7 +2108,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
     return date.toLocaleString(
+
+
+
+
 
 
 
@@ -1144,7 +2128,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
       {
+
+
+
+
 
 
 
@@ -1152,7 +2144,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
         month: "short",
+
+
+
+
 
 
 
@@ -1160,7 +2160,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
         hour: "2-digit",
+
+
+
+
 
 
 
@@ -1168,11 +2176,23 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
       }
 
 
 
+
+
+
+
     );
+
+
+
+
 
 
 
@@ -1184,7 +2204,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
   // ==========================================
+
+
+
+
 
 
 
@@ -1192,7 +2224,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
   // ==========================================
+
+
+
+
+
+
+
+
 
 
 
@@ -1204,7 +2248,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
     participants.filter((participant) => {
+
+
+
+
 
 
 
@@ -1212,7 +2264,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
         participant.name
+
+
+
+
 
 
 
@@ -1220,7 +2280,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
           .includes(
+
+
+
+
 
 
 
@@ -1228,7 +2296,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
           );
+
+
+
+
+
+
+
+
 
 
 
@@ -1244,7 +2324,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
       if (dateFilter) {
+
+
+
+
 
 
 
@@ -1252,11 +2344,23 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
           new Date(
 
 
 
+
+
+
+
             participant.submitted_at
+
+
+
+
 
 
 
@@ -1268,7 +2372,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
         const year =
+
+
+
+
 
 
 
@@ -1280,7 +2396,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
         const month = String(
+
+
+
+
 
 
 
@@ -1288,7 +2416,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
         ).padStart(2, "0");
+
+
+
+
+
+
+
+
 
 
 
@@ -1300,7 +2440,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
           participantDate.getDate()
+
+
+
+
 
 
 
@@ -1312,7 +2460,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
         const participantDateString =
+
+
+
+
 
 
 
@@ -1324,7 +2484,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
         matchesDate =
+
+
+
+
 
 
 
@@ -1332,7 +2504,15 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
           dateFilter;
+
+
+
+
 
 
 
@@ -1344,7 +2524,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
       return (
+
+
+
+
 
 
 
@@ -1352,11 +2544,23 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
         matchesDate
 
 
 
+
+
+
+
       );
+
+
+
+
 
 
 
@@ -1368,7 +2572,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
   // ==========================================
+
+
+
+
 
 
 
@@ -1376,7 +2592,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
   // ==========================================
+
+
+
+
+
+
+
+
 
 
 
@@ -1388,11 +2616,23 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
     setSearchTerm("");
 
 
 
+
+
+
+
     setDateFilter("");
+
+
+
+
 
 
 
@@ -1412,11 +2652,35 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // ==========================================
 
 
 
+
+
+
+
 // EXPORT PARTICIPANTS TO CSV
+
+
+
+
 
 
 
@@ -1428,7 +2692,19 @@ const handleDeleteParticipant = async (participant) => {
 
 
 
+
+
+
+
+
+
+
+
 const exportParticipantsToCSV = () => {
+
+
+
+
 
 
 
@@ -1436,11 +2712,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     alert("No participants available to export.");
 
 
 
+
+
+
+
     return;
+
+
+
+
 
 
 
@@ -1452,7 +2740,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   const headers = [
+
+
+
+
 
 
 
@@ -1460,7 +2760,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     "Name",
+
+
+
+
 
 
 
@@ -1468,7 +2776,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     "Question",
+
+
+
+
 
 
 
@@ -1476,7 +2792,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
   ];
+
+
+
+
+
+
+
+
 
 
 
@@ -1492,7 +2820,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   filteredParticipants.forEach((participant) => {
+
+
+
+
 
 
 
@@ -1500,7 +2840,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
       !participant.responses ||
+
+
+
+
 
 
 
@@ -1508,7 +2856,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     ) {
+
+
+
+
 
 
 
@@ -1516,7 +2872,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         participant.id,
+
+
+
+
 
 
 
@@ -1524,19 +2888,43 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         formatDateTime(participant.submitted_at),
 
 
 
+
+
+
+
         "",
 
 
 
+
+
+
+
         "",
+
+
+
+
 
 
 
       ]);
+
+
+
+
+
+
+
+
 
 
 
@@ -1548,7 +2936,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -1560,7 +2960,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
       rows.push([
+
+
+
+
 
 
 
@@ -1568,7 +2976,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         participant.name,
+
+
+
+
 
 
 
@@ -1576,7 +2992,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         response.question || "",
+
+
+
+
 
 
 
@@ -1584,11 +3008,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
       ]);
 
 
 
+
+
+
+
     });
+
+
+
+
 
 
 
@@ -1600,7 +3036,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   const escapeCSV = (value) => {
+
+
+
+
 
 
 
@@ -1612,7 +3060,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
     return `"${text.replace(/"/g, '""')}"`;
+
+
+
+
 
 
 
@@ -1624,7 +3084,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   const csvContent = [
+
+
+
+
 
 
 
@@ -1632,7 +3104,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     ...rows.map((row) =>
+
+
+
+
 
 
 
@@ -1640,7 +3120,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     ),
+
+
+
+
 
 
 
@@ -1652,7 +3140,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   const blob = new Blob(
+
+
+
+
 
 
 
@@ -1660,7 +3160,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -1668,11 +3176,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     }
 
 
 
+
+
+
+
   );
+
+
+
+
+
+
+
+
 
 
 
@@ -1688,7 +3212,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   const link = document.createElement("a");
+
+
+
+
+
+
+
+
 
 
 
@@ -1700,11 +3240,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
   link.download = `IPL_2029_Participants_${new Date()
 
 
 
+
+
+
+
     .toISOString()
+
+
+
+
 
 
 
@@ -1716,7 +3268,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   document.body.appendChild(link);
+
+
+
+
 
 
 
@@ -1728,11 +3292,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   document.body.removeChild(link);
 
 
 
+
+
+
+
   URL.revokeObjectURL(url);
+
+
+
+
 
 
 
@@ -1752,7 +3332,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // ==========================================
+
+
+
+
 
 
 
@@ -1760,7 +3360,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
   // ==========================================
+
+
+
+
+
+
+
+
 
 
 
@@ -1772,7 +3384,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
     onLogout();
+
+
+
+
 
 
 
@@ -1784,7 +3404,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   return (
+
+
+
+
 
 
 
@@ -1796,7 +3428,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
       {/* =====================================
+
+
+
+
 
 
 
@@ -1804,7 +3448,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
       ====================================== */}
+
+
+
+
+
+
+
+
 
 
 
@@ -1820,7 +3476,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         <div className="sidebar-brand">
+
+
+
+
+
+
+
+
 
 
 
@@ -1832,11 +3504,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             🏏
 
 
 
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -1848,11 +3536,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             <h2>IPL 2029</h2>
 
 
 
+
+
+
+
             <p>Admin Panel</p>
+
+
+
+
 
 
 
@@ -1864,7 +3564,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -1880,7 +3596,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           <button
+
+
+
+
 
 
 
@@ -1888,7 +3616,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             onClick={() =>
+
+
+
+
 
 
 
@@ -1896,7 +3632,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             }
+
+
+
+
 
 
 
@@ -1904,7 +3648,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             <span className="nav-icon">
+
+
+
+
 
 
 
@@ -1912,7 +3664,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             </span>
+
+
+
+
+
+
+
+
 
 
 
@@ -1924,7 +3688,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </button>
+
+
+
+
+
+
+
+
 
 
 
@@ -1936,7 +3712,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             className="nav-item"
+
+
+
+
 
 
 
@@ -1944,7 +3728,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               navigate("/admin/analytics")
+
+
+
+
 
 
 
@@ -1952,7 +3744,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           >
+
+
+
+
 
 
 
@@ -1960,7 +3760,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               📈
+
+
+
+
 
 
 
@@ -1972,11 +3780,31 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             Analytics
 
 
 
+
+
+
+
           </button>
+
+
+
+
+
+
+
+
 
 
 
@@ -1992,7 +3820,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         <div className="sidebar-bottom">
+
+
+
+
+
+
+
+
 
 
 
@@ -2008,7 +3852,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             <div className="user-avatar">
+
+
+
+
 
 
 
@@ -2016,7 +3872,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 ? username
+
+
+
+
 
 
 
@@ -2024,7 +3888,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     .toUpperCase()
+
+
+
+
 
 
 
@@ -2032,7 +3904,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2048,11 +3932,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <strong>
 
 
 
+
+
+
+
                 {username}
+
+
+
+
 
 
 
@@ -2064,7 +3964,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <span>
+
+
+
+
 
 
 
@@ -2072,7 +3984,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               </span>
+
+
+
+
+
+
+
+
 
 
 
@@ -2088,7 +4012,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2100,7 +4040,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             className="logout-button"
+
+
+
+
 
 
 
@@ -2108,11 +4056,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           >
 
 
 
+
+
+
+
             🚪 Logout
+
+
+
+
 
 
 
@@ -2124,7 +4084,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2140,7 +4116,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
       {/* =====================================
+
+
+
+
 
 
 
@@ -2148,7 +4136,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
       ====================================== */}
+
+
+
+
+
+
+
+
 
 
 
@@ -2164,7 +4164,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         {/* HEADER */}
+
+
+
+
+
+
+
+
 
 
 
@@ -2180,7 +4196,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           <div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2192,11 +4224,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               IPL 2029
 
 
 
+
+
+
+
             </p>
+
+
+
+
+
+
+
+
 
 
 
@@ -2208,7 +4256,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               Dashboard
+
+
+
+
 
 
 
@@ -2220,7 +4276,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             <p className="header-description">
+
+
+
+
 
 
 
@@ -2228,7 +4296,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               poll
+
+
+
+
 
 
 
@@ -2240,7 +4316,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2252,7 +4344,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             Logged in as{" "}
+
+
+
+
 
 
 
@@ -2260,7 +4360,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               {username}
+
+
+
+
 
 
 
@@ -2268,7 +4376,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2284,7 +4404,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         {/* ERROR */}
+
+
+
+
+
+
+
+
 
 
 
@@ -2296,7 +4432,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           <div className="dashboard-error">
+
+
+
+
 
 
 
@@ -2304,7 +4448,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -2316,7 +4468,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         {/* =====================================
+
+
+
+
 
 
 
@@ -2324,7 +4488,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         ====================================== */}
+
+
+
+
+
+
+
+
 
 
 
@@ -2340,7 +4516,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           <div className="stat-card">
+
+
+
+
+
+
+
+
 
 
 
@@ -2352,11 +4544,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               👥
 
 
 
+
+
+
+
             </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2372,11 +4580,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <span>
 
 
 
+
+
+
+
                 Total Participants
+
+
+
+
 
 
 
@@ -2388,7 +4612,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <strong>
+
+
+
+
 
 
 
@@ -2396,7 +4632,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               </strong>
+
+
+
+
+
+
+
+
 
 
 
@@ -2412,6 +4660,14 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           </div>
 
 
@@ -2420,7 +4676,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           <div className="stat-card">
+
+
+
+
+
+
+
+
 
 
 
@@ -2432,11 +4704,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               ✓
 
 
 
+
+
+
+
             </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2452,11 +4740,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <span>
 
 
 
+
+
+
+
                 Poll Status
+
+
+
+
 
 
 
@@ -2468,7 +4772,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <strong
+
+
+
+
 
 
 
@@ -2476,7 +4792,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   pollStatus?.is_active
+
+
+
+
 
 
 
@@ -2484,7 +4808,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     : "status-closed"
+
+
+
+
 
 
 
@@ -2492,7 +4824,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               >
+
+
+
+
 
 
 
@@ -2500,7 +4840,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   ? "Active"
+
+
+
+
 
 
 
@@ -2508,7 +4856,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               </strong>
+
+
+
+
+
+
+
+
 
 
 
@@ -2524,7 +4884,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2540,7 +4916,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             <div className="stat-icon red">
+
+
+
+
 
 
 
@@ -2548,7 +4936,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2564,11 +4964,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <span>
 
 
 
+
+
+
+
                 Total Questions
+
+
+
+
 
 
 
@@ -2580,7 +4996,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <strong>
+
+
+
+
 
 
 
@@ -2588,7 +5016,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               </strong>
+
+
+
+
+
+
+
+
 
 
 
@@ -2604,7 +5044,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2620,7 +5076,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         {/* =====================================
+
+
+
+
 
 
 
@@ -2628,7 +5096,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         ====================================== */}
+
+
+
+
+
+
+
+
 
 
 
@@ -2644,7 +5124,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           <div className="poll-control-left">
+
+
+
+
+
+
+
+
 
 
 
@@ -2656,7 +5152,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               className={`poll-status-dot ${
+
+
+
+
 
 
 
@@ -2664,7 +5168,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   ? "dot-active"
+
+
+
+
 
 
 
@@ -2672,11 +5184,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               }`}
 
 
 
+
+
+
+
             ></div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2692,11 +5220,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <h3>
 
 
 
+
+
+
+
                 IPL 2029 Prediction Poll
+
+
+
+
 
 
 
@@ -2708,7 +5252,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <p>
+
+
+
+
 
 
 
@@ -2716,7 +5272,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   ? "The poll is currently open for voting."
+
+
+
+
 
 
 
@@ -2724,7 +5288,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               </p>
+
+
+
+
+
+
+
+
 
 
 
@@ -2740,7 +5316,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2756,7 +5348,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             <span
+
+
+
+
 
 
 
@@ -2764,7 +5368,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 pollStatus?.is_active
+
+
+
+
 
 
 
@@ -2772,7 +5384,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   : "label-closed"
+
+
+
+
 
 
 
@@ -2780,7 +5400,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             >
+
+
+
+
 
 
 
@@ -2788,11 +5416,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 ? "OPEN"
 
 
 
+
+
+
+
                 : "CLOSED"}
+
+
+
+
 
 
 
@@ -2804,7 +5444,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             <button
+
+
+
+
 
 
 
@@ -2812,7 +5464,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 pollStatus?.is_active
+
+
+
+
 
 
 
@@ -2820,7 +5480,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   : "main-open"
+
+
+
+
 
 
 
@@ -2828,7 +5496,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               onClick={handleTogglePoll}
+
+
+
+
 
 
 
@@ -2836,7 +5512,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             >
+
+
+
+
 
 
 
@@ -2844,7 +5528,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 ? "Updating..."
+
+
+
+
 
 
 
@@ -2852,7 +5544,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 ? "Close Poll"
+
+
+
+
 
 
 
@@ -2860,7 +5560,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             </button>
+
+
+
+
+
+
+
+
 
 
 
@@ -2876,7 +5588,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         </section>
+
+
+
+
+
+
+
+
 
 
 
@@ -2888,11 +5616,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             PARTICIPANTS
 
 
 
+
+
+
+
         ====================================== */}
+
+
+
+
+
+
+
+
 
 
 
@@ -2908,7 +5652,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           <div className="section-header">
+
+
+
+
+
+
+
+
 
 
 
@@ -2924,11 +5684,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <h2>
 
 
 
+
+
+
+
                 Participants
+
+
+
+
 
 
 
@@ -2940,7 +5716,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <p>
+
+
+
+
 
 
 
@@ -2948,7 +5736,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               </p>
+
+
+
+
+
+
+
+
 
 
 
@@ -2964,11 +5764,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             <span className="participant-count">
 
 
 
+
+
+
+
               {filteredParticipants.length} shown
+
+
+
+
 
 
 
@@ -2980,7 +5796,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -2996,7 +5828,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           <div className="table-toolbar">
+
+
+
+
+
+
+
+
 
 
 
@@ -3008,7 +5856,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               style={{
+
+
+
+
 
 
 
@@ -3016,7 +5872,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 gap: "10px",
+
+
+
+
 
 
 
@@ -3024,7 +5888,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 flexWrap: "wrap",
+
+
+
+
 
 
 
@@ -3032,7 +5904,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             >
+
+
+
+
+
+
+
+
 
 
 
@@ -3048,7 +5932,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <div className="search-box">
+
+
+
+
+
+
+
+
 
 
 
@@ -3060,7 +5960,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   🔍
+
+
+
+
 
 
 
@@ -3072,7 +5980,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 <input
+
+
+
+
 
 
 
@@ -3080,7 +6000,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   placeholder="Search participants..."
+
+
+
+
 
 
 
@@ -3088,7 +6016,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   onChange={(event) =>
+
+
+
+
 
 
 
@@ -3096,7 +6032,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                       event.target.value
+
+
+
+
 
 
 
@@ -3104,7 +6048,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   }
+
+
+
+
 
 
 
@@ -3116,7 +6068,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3132,7 +6100,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <div className="date-filter-box">
+
+
+
+
+
+
+
+
 
 
 
@@ -3144,7 +6128,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   📅
+
+
+
+
 
 
 
@@ -3156,7 +6148,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 <input
+
+
+
+
 
 
 
@@ -3164,7 +6168,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   value={dateFilter}
+
+
+
+
 
 
 
@@ -3172,7 +6184,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     setDateFilter(
+
+
+
+
 
 
 
@@ -3180,11 +6200,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     )
 
 
 
+
+
+
+
                   }
+
+
+
+
 
 
 
@@ -3196,7 +6228,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3212,7 +6260,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               {(searchTerm ||
+
+
+
+
 
 
 
@@ -3220,7 +6280,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 <button
+
+
+
+
 
 
 
@@ -3228,7 +6296,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   onClick={clearFilters}
+
+
+
+
 
 
 
@@ -3236,11 +6312,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   Clear
 
 
 
+
+
+
+
                 </button>
+
+
+
+
 
 
 
@@ -3252,7 +6340,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3268,31 +6372,67 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                       {/* EXPORT CSV */}
+
+
+
+
 
 
 
           <button
 
+
+
             className="refresh-button"
+
+
 
             onClick={exportParticipantsToCSV}
 
+
+
             style={{
+
+
 
               background: "#16a34a",
 
+
+
               color: "#ffffff",
+
+
 
               border: "none",
 
+
+
             }}
+
+
 
           >
 
+
+
             📥 Export CSV
 
+
+
           </button>
+
+
+
+
 
 
 
@@ -3300,17 +6440,39 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           <button
+
+
 
             className="refresh-button"
 
+
+
             onClick={handleRefresh}
+
+
 
           >
 
+
+
             🔄 Refresh
 
+
+
           </button>
+
+
+
+
+
+
+
+
 
 
 
@@ -3319,6 +6481,14 @@ const exportParticipantsToCSV = () => {
 
 
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3334,7 +6504,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           {!loading && (
+
+
+
+
 
 
 
@@ -3342,7 +6524,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               style={{
+
+
+
+
 
 
 
@@ -3350,7 +6540,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   "0 24px 15px",
+
+
+
+
 
 
 
@@ -3358,7 +6556,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 color: "#8992a2",
+
+
+
+
 
 
 
@@ -3366,7 +6572,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             >
+
+
+
+
 
 
 
@@ -3374,7 +6588,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <strong>
+
+
+
+
 
 
 
@@ -3382,7 +6604,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               </strong>{" "}
+
+
+
+
 
 
 
@@ -3390,7 +6620,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <strong>
+
+
+
+
 
 
 
@@ -3398,7 +6636,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               </strong>{" "}
+
+
+
+
 
 
 
@@ -3406,11 +6652,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             </div>
 
 
 
+
+
+
+
           )}
+
+
+
+
+
+
+
+
 
 
 
@@ -3426,7 +6688,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           <div className="participants-table-wrapper">
+
+
+
+
+
+
+
+
 
 
 
@@ -3442,7 +6720,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <div className="empty-state">
+
+
+
+
+
+
+
+
 
 
 
@@ -3458,7 +6752,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 <p>
+
+
+
+
 
 
 
@@ -3466,7 +6772,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 </p>
+
+
+
+
+
+
+
+
 
 
 
@@ -3482,11 +6800,31 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             ) : filteredParticipants.length ===
 
 
 
+
+
+
+
               0 ? (
+
+
+
+
+
+
+
+
 
 
 
@@ -3502,11 +6840,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 <div className="empty-icon">
 
 
 
+
+
+
+
                   👥
+
+
+
+
 
 
 
@@ -3518,11 +6872,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 <h3>
 
 
 
+
+
+
+
                   No participants found
+
+
+
+
 
 
 
@@ -3534,7 +6904,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 <p>
+
+
+
+
 
 
 
@@ -3542,11 +6924,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     ? "Try changing your search or date filter."
 
 
 
+
+
+
+
                     : "No participants have submitted the poll yet."}
+
+
+
+
 
 
 
@@ -3558,7 +6952,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3574,7 +6984,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <table className="participants-table">
+
+
+
+
+
+
+
+
 
 
 
@@ -3590,6 +7016,14 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                   <tr>
 
 
@@ -3598,7 +7032,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                     <th>
+
+
+
+
 
 
 
@@ -3606,6 +7052,10 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     </th>
 
 
@@ -3614,7 +7064,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                     <th>
+
+
+
+
 
 
 
@@ -3622,6 +7084,10 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     </th>
 
 
@@ -3630,7 +7096,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                     <th>
+
+
+
+
 
 
 
@@ -3638,7 +7116,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     </th>
+
+
+
+
+
+
+
+
 
 
 
@@ -3650,11 +7140,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                       Actions
 
 
 
+
+
+
+
                     </th>
+
+
+
+
+
+
+
+
 
 
 
@@ -3670,7 +7176,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 </thead>
+
+
+
+
+
+
+
+
 
 
 
@@ -3686,7 +7208,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                   {filteredParticipants.map(
+
+
+
+
 
 
 
@@ -3698,7 +7232,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                       <tr
+
+
+
+
 
 
 
@@ -3706,11 +7252,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                           participant.id
 
 
 
+
+
+
+
                         }
+
+
+
+
 
 
 
@@ -3722,11 +7280,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                         <td className="serial-number">
 
 
 
+
+
+
+
                           {index + 1}
+
+
+
+
 
 
 
@@ -3738,7 +7312,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                         <td>
+
+
+
+
+
+
+
+
 
 
 
@@ -3754,7 +7344,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                             <div className="participant-avatar">
+
+
+
+
 
 
 
@@ -3762,11 +7364,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 .charAt(0)
 
 
 
+
+
+
+
                                 .toUpperCase()}
+
+
+
+
 
 
 
@@ -3778,7 +7392,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                             <strong>
+
+
+
+
 
 
 
@@ -3786,7 +7412,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                             </strong>
+
+
+
+
+
+
+
+
 
 
 
@@ -3802,6 +7440,14 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                         </td>
 
 
@@ -3810,7 +7456,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                         <td>
+
+
+
+
+
+
+
+
 
 
 
@@ -3822,7 +7484,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                             <strong>
+
+
+
+
 
 
 
@@ -3830,11 +7500,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 participant.submitted_at
 
 
 
+
+
+
+
                               )}
+
+
+
+
 
 
 
@@ -3846,7 +7528,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                             <div
+
+
+
+
 
 
 
@@ -3854,7 +7548,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 marginTop: "3px",
+
+
+
+
 
 
 
@@ -3862,7 +7564,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 color: "#9aa3b2",
+
+
+
+
 
 
 
@@ -3870,7 +7580,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                             >
+
+
+
+
 
 
 
@@ -3878,7 +7596,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 participant.submitted_at
+
+
+
+
 
 
 
@@ -3886,7 +7612,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                             </div>
+
+
+
+
 
 
 
@@ -3898,7 +7632,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                         </td>
+
+
+
+
+
+
+
+
 
 
 
@@ -3914,7 +7664,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                           <div
+
+
+
+
 
 
 
@@ -3922,7 +7684,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                               display: "flex",
+
+
+
+
 
 
 
@@ -3930,11 +7700,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                               flexWrap: "wrap",
 
 
 
+
+
+
+
                             }}
+
+
+
+
 
 
 
@@ -3946,7 +7728,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                             <button
+
+
+
+
 
 
 
@@ -3954,7 +7748,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                               onClick={() =>
+
+
+
+
 
 
 
@@ -3962,7 +7764,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                   participant
+
+
+
+
 
 
 
@@ -3970,7 +7780,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                               }
+
+
+
+
 
 
 
@@ -3978,11 +7796,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                               View Answers
 
 
 
+
+
+
+
                             </button>
+
+
+
+
+
+
+
+
 
 
 
@@ -3994,7 +7828,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                               className="delete-button"
+
+
+
+
 
 
 
@@ -4002,7 +7844,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 handleDeleteParticipant(
+
+
+
+
 
 
 
@@ -4010,11 +7860,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 )
 
 
 
+
+
+
+
                               }
+
+
+
+
 
 
 
@@ -4022,7 +7884,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 deletingId ===
+
+
+
+
 
 
 
@@ -4030,7 +7900,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                               }
+
+
+
+
 
 
 
@@ -4038,7 +7916,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 border: "none",
+
+
+
+
 
 
 
@@ -4046,7 +7932,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                   "#fee2e2",
+
+
+
+
 
 
 
@@ -4054,7 +7948,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                   "#dc2626",
+
+
+
+
 
 
 
@@ -4062,7 +7964,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                   "7px",
+
+
+
+
 
 
 
@@ -4070,7 +7980,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                   "8px 11px",
+
+
+
+
 
 
 
@@ -4078,7 +7996,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                   "11px",
+
+
+
+
 
 
 
@@ -4086,7 +8012,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                   "700",
+
+
+
+
 
 
 
@@ -4094,11 +8028,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                   deletingId ===
 
 
 
+
+
+
+
                                   participant.id
+
+
+
+
 
 
 
@@ -4106,7 +8052,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                     : "pointer",
+
+
+
+
 
 
 
@@ -4114,7 +8068,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                   deletingId ===
+
+
+
+
 
 
 
@@ -4122,7 +8084,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                     ? 0.6
+
+
+
+
 
 
 
@@ -4130,7 +8100,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                               }}
+
+
+
+
 
 
 
@@ -4138,7 +8116,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                               {deletingId ===
+
+
+
+
 
 
 
@@ -4146,7 +8132,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                                 ? "Deleting..."
+
+
+
+
 
 
 
@@ -4154,7 +8148,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                             </button>
+
+
+
+
+
+
+
+
 
 
 
@@ -4170,7 +8176,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                         </td>
+
+
+
+
+
+
+
+
 
 
 
@@ -4186,11 +8208,31 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                     )
 
 
 
+
+
+
+
                   )}
+
+
+
+
+
+
+
+
 
 
 
@@ -4206,7 +8248,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               </table>
+
+
+
+
+
+
+
+
 
 
 
@@ -4222,7 +8280,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4238,7 +8312,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
       </main>
+
+
+
+
+
+
+
+
 
 
 
@@ -4250,11 +8340,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           ANSWERS MODAL
 
 
 
+
+
+
+
       ====================================== */}
+
+
+
+
+
+
+
+
 
 
 
@@ -4270,7 +8376,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
         <div
+
+
+
+
 
 
 
@@ -4278,7 +8396,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           onClick={() =>
+
+
+
+
 
 
 
@@ -4286,7 +8412,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           }
+
+
+
+
 
 
 
@@ -4298,7 +8432,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           <div
+
+
+
+
 
 
 
@@ -4306,7 +8452,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             onClick={(event) =>
+
+
+
+
 
 
 
@@ -4314,11 +8468,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             }
 
 
 
+
+
+
+
           >
+
+
+
+
+
+
+
+
 
 
 
@@ -4334,7 +8504,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4346,7 +8532,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   Participant Answers
+
+
+
+
 
 
 
@@ -4358,7 +8552,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 <p>
+
+
+
+
 
 
 
@@ -4366,7 +8572,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 </p>
+
+
+
+
+
+
+
+
 
 
 
@@ -4382,7 +8600,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <button
+
+
+
+
 
 
 
@@ -4390,7 +8620,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 onClick={() =>
+
+
+
+
 
 
 
@@ -4398,7 +8636,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 }
+
+
+
+
 
 
 
@@ -4406,7 +8652,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 ✕
+
+
+
+
 
 
 
@@ -4418,7 +8672,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4434,11 +8704,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <strong>
 
 
 
+
+
+
+
                 {selectedParticipant.name}
+
+
+
+
 
 
 
@@ -4450,7 +8736,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <span>
+
+
+
+
 
 
 
@@ -4458,7 +8756,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 {formatDateTime(
+
+
+
+
 
 
 
@@ -4466,7 +8772,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 )}
+
+
+
+
 
 
 
@@ -4478,7 +8792,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4494,11 +8824,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               {selectedParticipant.responses &&
 
 
 
+
+
+
+
               selectedParticipant.responses.length >
+
+
+
+
 
 
 
@@ -4510,7 +8856,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 selectedParticipant.responses.map(
+
+
+
+
 
 
 
@@ -4522,7 +8880,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                     <div
+
+
+
+
 
 
 
@@ -4530,7 +8900,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                       key={index}
+
+
+
+
 
 
 
@@ -4542,7 +8920,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                       <div className="question-number">
+
+
+
+
 
 
 
@@ -4550,7 +8940,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                       </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4566,11 +8968,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                         <h4>
 
 
 
+
+
+
+
                           {response.question}
+
+
+
+
 
 
 
@@ -4582,7 +9000,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                         <p>
+
+
+
+
 
 
 
@@ -4590,7 +9020,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                         </p>
+
+
+
+
+
+
+
+
 
 
 
@@ -4606,7 +9048,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                     </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4618,7 +9076,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 )
+
+
+
+
+
+
+
+
 
 
 
@@ -4634,7 +9104,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
                 <div className="empty-state">
+
+
+
+
 
 
 
@@ -4642,7 +9124,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4658,7 +9152,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
             </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4674,7 +9184,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
               <button
+
+
+
+
 
 
 
@@ -4682,7 +9204,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 onClick={() =>
+
+
+
+
 
 
 
@@ -4690,7 +9220,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 }
+
+
+
+
 
 
 
@@ -4698,11 +9236,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 Close
 
 
 
+
+
+
+
               </button>
+
+
+
+
+
+
+
+
 
 
 
@@ -4718,7 +9272,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
           </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4734,7 +9304,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
       )}
+
+
+
+
+
+
+
+
 
 
 
@@ -4746,11 +9332,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
   );
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
