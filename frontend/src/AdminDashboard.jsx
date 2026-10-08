@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 
+
+
 import { useNavigate } from "react-router-dom";
+
+
+
+
 
 
 
@@ -8,337 +14,645 @@ import "./AdminDashboard.css";
 
 
 
+
+
+
+
 function AdminDashboard({ username, onLogout }) {
+
+
 
   const navigate = useNavigate();
 
 
 
+
+
+
+
   const [participants, setParticipants] = useState([]);
+
+
 
   const [loading, setLoading] = useState(true);
 
+
+
   const [selectedParticipant, setSelectedParticipant] =
+
+
 
     useState(null);
 
 
 
+
+
+
+
   const [searchTerm, setSearchTerm] = useState("");
+
+
 
   const [dateFilter, setDateFilter] = useState("");
 
 
 
+
+
+
+
   const [pollStatus, setPollStatus] = useState(null);
+
+
 
   const [togglingPoll, setTogglingPoll] = useState(false);
 
 
 
+
+
+
+
   const [deletingId, setDeletingId] = useState(null);
+
+
 
   const [error, setError] = useState("");
 
 
 
+
+
+
+
   // ==========================================
+
+
 
   // CSRF TOKEN
 
+
+
   // ==========================================
+
+
+
+
 
 
 
   const getCsrfToken = () => {
-
     const cookies = document.cookie.split(";");
 
-
-
     for (let cookie of cookies) {
-
       cookie = cookie.trim();
 
-
-
       if (cookie.startsWith("csrftoken=")) {
-
         return decodeURIComponent(
-
           cookie.substring("csrftoken=".length)
-
         );
-
       }
-
     }
 
-
-
     return null;
-
   };
 
+  const fetchCsrfToken = async () => {
+    let token = getCsrfToken();
 
+    if (token) return token;
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/me/`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      try {
+        const data = await response.json();
+
+        if (data?.csrfToken) {
+          return data.csrfToken;
+        }
+      } catch {
+        // Ignore non-JSON response.
+      }
+    } catch (error) {
+      console.error("CSRF token request error:", error);
+    }
+
+    return getCsrfToken();
+  };
 
   // ==========================================
-
   // FETCH PARTICIPANTS
-
   // ==========================================
-
-
 
   const fetchParticipants = async () => {
 
+
+
     try {
 
+
+
       setLoading(true);
+
+
 
       setError("");
 
 
 
+
+
+
+
       const response = await fetch(
+
+
 
         `${import.meta.env.VITE_API_URL}/api/admin/participants/`,
 
+
+
         {
+
+
 
           method: "GET",
 
+
+
           credentials: "include",
 
+
+
         }
+
+
 
       );
 
 
 
+
+
+
+
       if (!response.ok) {
+
+
 
         if (response.status === 403) {
 
+
+
           setError(
+
+
 
             "Session expired. Please login again."
 
+
+
           );
 
+
+
           return;
+
+
 
         }
 
 
 
+
+
+
+
         throw new Error(
+
+
 
           "Failed to fetch participants."
 
+
+
         );
+
+
 
       }
 
 
 
+
+
+
+
       const data = await response.json();
+
+
+
+
 
 
 
       setParticipants(data);
 
+
+
     } catch (error) {
+
+
 
       console.error(
 
+
+
         "Participants fetch error:",
+
+
 
         error
 
+
+
       );
+
+
+
+
 
 
 
       setError(
 
+
+
         "Unable to load participants."
+
+
 
       );
 
+
+
     } finally {
+
+
 
       setLoading(false);
 
+
+
     }
+
+
 
   };
 
 
 
+
+
+
+
   // ==========================================
+
+
 
   // FETCH POLL STATUS
 
+
+
   // ==========================================
+
+
+
+
 
 
 
   const fetchPollStatus = async () => {
 
+
+
     try {
+
+
 
       const response = await fetch(
 
+
+
         `${import.meta.env.VITE_API_URL}/api/admin/poll/status/`,
+
+
 
         {
 
+
+
           method: "GET",
+
+
 
           credentials: "include",
 
+
+
         }
+
+
 
       );
 
 
 
+
+
+
+
       if (!response.ok) {
+
+
 
         throw new Error(
 
+
+
           "Failed to fetch poll status."
 
+
+
         );
+
+
 
       }
 
 
 
+
+
+
+
       const data = await response.json();
+
+
+
+
 
 
 
       setPollStatus(data);
 
+
+
     } catch (error) {
+
+
 
       console.error(
 
+
+
         "Poll status error:",
+
+
 
         error
 
+
+
       );
 
+
+
     }
+
+
 
   };
 
 
 
+
+
+
+
   // ==========================================
+
+
 
   // INITIAL LOAD
 
+
+
   // ==========================================
+
+
+
+
 
 
 
   useEffect(() => {
 
+
+
     fetchParticipants();
 
+
+
     fetchPollStatus();
+
+
 
   }, []);
 
 
 
+
+
+
+
   // ==========================================
+
+
 
   // REFRESH
 
+
+
   // ==========================================
+
+
+
+
 
 
 
   const handleRefresh = () => {
 
+
+
     fetchParticipants();
 
+
+
     fetchPollStatus();
+
+
 
   };
 
 
 
+
+
+
+
   // ==========================================
+
+
 
   // TOGGLE POLL
 
+
+
   // ==========================================
+
+
+
+
 
 
 
   const handleTogglePoll = async () => {
 
+
+
     if (togglingPoll) {
 
+
+
       return;
+
+
 
     }
 
 
 
-    const csrfToken = getCsrfToken();
+
+
+
+
+    const csrfToken = await fetchCsrfToken();
+
+
+
+
 
 
 
     if (!csrfToken) {
 
+
+
       setError(
+
+
 
         "CSRF token not found. Please refresh the page."
 
+
+
       );
 
+
+
       return;
+
+
 
     }
 
 
 
+
+
+
+
     try {
 
+
+
       setTogglingPoll(true);
+
+
 
       setError("");
 
 
 
+
+
+
+
       const response = await fetch(
+
+
 
         `${import.meta.env.VITE_API_URL}/api/admin/poll/toggle/`,
 
+
+
         {
+
+
 
           method: "POST",
 
+
+
           credentials: "include",
+
+
 
           headers: {
 
+
+
             "Content-Type": "application/json",
+
+
 
             "X-CSRFToken": csrfToken,
 
+
+
           },
+
+
 
         }
 
+
+
       );
+
+
+
+
 
 
 
@@ -346,413 +660,125 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
       if (!response.ok) {
+
+
 
         throw new Error(
 
+
+
           data.message ||
+
+
 
             "Unable to change poll status."
 
+
+
         );
 
+
+
       }
+
+
+
+
 
 
 
       setPollStatus((current) => ({
 
+
+
         ...current,
 
+
+
         is_active: data.is_active,
+
+
 
       }));
 
 
 
+
+
+
+
       alert(
 
+
+
         data.message ||
+
+
 
           "Poll status updated successfully."
 
+
+
       );
+
+
 
     } catch (error) {
 
+
+
       console.error(
+
+
 
         "Toggle poll error:",
 
+
+
         error
+
+
 
       );
 
 
 
+
+
+
+
       setError(
 
+
+
         error.message ||
+
+
 
           "Unable to change poll status."
 
+
+
       );
 
+
+
     } finally {
+
+
 
       setTogglingPoll(false);
 
-    }
 
-  };
-
-
-
-  // ==========================================
-
-  // DELETE PARTICIPANT
-
-  // ==========================================
-
-
-
-  const handleDeleteParticipant = async (
-
-    participant
-
-  ) => {
-
-    const confirmDelete = window.confirm(
-
-      `Are you sure you want to delete ${participant.name}?`
-
-    );
-
-
-
-    if (!confirmDelete) {
-
-      return;
 
     }
 
 
-
-    const csrfToken = getCsrfToken();
-
-
-
-    if (!csrfToken) {
-
-      setError(
-
-        "CSRF token not found. Please refresh the page."
-
-      );
-
-      return;
-
-    }
-
-
-
-    try {
-
-      setDeletingId(participant.id);
-
-      setError("");
-
-
-
-      const response = await fetch(
-
-        `${import.meta.env.VITE_API_URL}/api/admin/participants/${participant.id}/`,
-
-        {
-
-          method: "DELETE",
-
-          credentials: "include",
-
-          headers: {
-
-            "X-CSRFToken": csrfToken,
-
-          },
-
-        }
-
-      );
-
-
-
-      const data = await response.json();
-
-
-
-      if (!response.ok) {
-
-        throw new Error(
-
-          data.message ||
-
-            "Failed to delete participant."
-
-        );
-
-      }
-
-
-
-      setParticipants((current) =>
-
-        current.filter(
-
-          (item) => item.id !== participant.id
-
-        )
-
-      );
-
-
-
-      if (
-
-        selectedParticipant &&
-
-        selectedParticipant.id === participant.id
-
-      ) {
-
-        setSelectedParticipant(null);
-
-      }
-
-
-
-      alert(
-
-        data.message ||
-
-          "Participant deleted successfully."
-
-      );
-
-    } catch (error) {
-
-      console.error(
-
-        "Delete participant error:",
-
-        error
-
-      );
-
-
-
-      setError(
-
-        error.message ||
-
-          "Unable to delete participant."
-
-      );
-
-    } finally {
-
-      setDeletingId(null);
-
-    }
-
-  };
-
-
-
-  // ==========================================
-
-  // DATE FORMAT
-
-  // ==========================================
-
-
-
-  const formatDate = (dateString) => {
-
-    if (!dateString) {
-
-      return "N/A";
-
-    }
-
-
-
-    const date = new Date(dateString);
-
-
-
-    return date.toLocaleDateString(
-
-      "en-IN",
-
-      {
-
-        day: "2-digit",
-
-        month: "short",
-
-        year: "numeric",
-
-      }
-
-    );
-
-  };
-
-
-
-  const formatDateTime = (dateString) => {
-
-    if (!dateString) {
-
-      return "N/A";
-
-    }
-
-
-
-    const date = new Date(dateString);
-
-
-
-    return date.toLocaleString(
-
-      "en-IN",
-
-      {
-
-        day: "2-digit",
-
-        month: "short",
-
-        year: "numeric",
-
-        hour: "2-digit",
-
-        minute: "2-digit",
-
-      }
-
-    );
-
-  };
-
-
-
-  // ==========================================
-
-  // SEARCH + DATE FILTER
-
-  // ==========================================
-
-
-
-  const filteredParticipants =
-
-    participants.filter((participant) => {
-
-      const matchesSearch =
-
-        participant.name
-
-          .toLowerCase()
-
-          .includes(
-
-            searchTerm.toLowerCase()
-
-          );
-
-
-
-      let matchesDate = true;
-
-
-
-      if (dateFilter) {
-
-        const participantDate =
-
-          new Date(
-
-            participant.submitted_at
-
-          );
-
-
-
-        const year =
-
-          participantDate.getFullYear();
-
-
-
-        const month = String(
-
-          participantDate.getMonth() + 1
-
-        ).padStart(2, "0");
-
-
-
-        const day = String(
-
-          participantDate.getDate()
-
-        ).padStart(2, "0");
-
-
-
-        const participantDateString =
-
-          `${year}-${month}-${day}`;
-
-
-
-        matchesDate =
-
-          participantDateString ===
-
-          dateFilter;
-
-      }
-
-
-
-      return (
-
-        matchesSearch &&
-
-        matchesDate
-
-      );
-
-    });
-
-
-
-  // ==========================================
-
-  // CLEAR FILTERS
-
-  // ==========================================
-
-
-
-  const clearFilters = () => {
-
-    setSearchTerm("");
-
-    setDateFilter("");
 
   };
 
@@ -762,19 +788,29 @@ function AdminDashboard({ username, onLogout }) {
 
 
 
+
+
+
+
   // ==========================================
 
-// EXPORT PARTICIPANTS TO CSV
+// DELETE PARTICIPANT
 
 // ==========================================
 
 
 
-const exportParticipantsToCSV = () => {
+const handleDeleteParticipant = async (participant) => {
 
-  if (filteredParticipants.length === 0) {
+  const confirmDelete = window.confirm(
 
-    alert("No participants available to export.");
+    `Are you sure you want to delete ${participant.name}?`
+
+  );
+
+
+
+  if (!confirmDelete) {
 
     return;
 
@@ -782,51 +818,57 @@ const exportParticipantsToCSV = () => {
 
 
 
-  const headers = [
+  try {
 
-    "Participant ID",
+    setDeletingId(participant.id);
 
-    "Name",
-
-    "Submitted Time",
-
-    "Question",
-
-    "Answer",
-
-  ];
+    setError("");
 
 
 
-  const rows = [];
+    let csrfToken = getCsrfToken();
 
 
 
-  filteredParticipants.forEach((participant) => {
+    /*
 
-    if (
+     * If the CSRF cookie is not available yet,
 
-      !participant.responses ||
+     * ask Django for a CSRF cookie first.
 
-      participant.responses.length === 0
+     */
 
-    ) {
+    if (!csrfToken) {
 
-      rows.push([
+      await fetch(
 
-        participant.id,
+        `${import.meta.env.VITE_API_URL}/api/admin/me/`,
 
-        participant.name,
+        {
 
-        formatDateTime(participant.submitted_at),
+          method: "GET",
 
-        "",
+          credentials: "include",
 
-        "",
+        }
 
-      ]);
+      );
 
 
+
+      csrfToken = getCsrfToken();
+
+    }
+
+
+
+    if (!csrfToken) {
+
+      setError(
+
+        "CSRF token not found. Please refresh the page and login again."
+
+      );
 
       return;
 
@@ -834,65 +876,807 @@ const exportParticipantsToCSV = () => {
 
 
 
-    participant.responses.forEach((response) => {
+    const response = await fetch(
 
-      rows.push([
+      `${import.meta.env.VITE_API_URL}/api/admin/participants/${participant.id}/`,
 
-        participant.id,
+      {
 
-        participant.name,
+        method: "DELETE",
 
-        formatDateTime(participant.submitted_at),
+        credentials: "include",
 
-        response.question || "",
+        headers: {
 
-        response.option || "",
+          "X-CSRFToken": csrfToken,
 
-      ]);
+          Accept: "application/json",
 
-    });
+        },
 
-  });
+      }
 
-
-
-  const escapeCSV = (value) => {
-
-    const text = String(value ?? "");
+    );
 
 
 
-    return `"${text.replace(/"/g, '""')}"`;
+    let data = {};
+
+
+
+    try {
+
+      data = await response.json();
+
+    } catch {
+
+      data = {};
+
+    }
+
+
+
+    if (!response.ok) {
+
+      if (response.status === 403) {
+
+        throw new Error(
+
+          data.detail ||
+
+            data.message ||
+
+            "Delete not allowed. Your admin session or CSRF token may have expired. Please login again."
+
+        );
+
+      }
+
+
+
+      if (response.status === 404) {
+
+        throw new Error(
+
+          data.message || "Participant not found."
+
+        );
+
+      }
+
+
+
+      throw new Error(
+
+        data.message ||
+
+          data.detail ||
+
+          "Failed to delete participant."
+
+      );
+
+    }
+
+
+
+    // Remove deleted participant immediately from the dashboard
+
+    setParticipants((current) =>
+
+      current.filter(
+
+        (item) => Number(item.id) !== Number(participant.id)
+
+      )
+
+    );
+
+
+
+    // Close answers modal if this participant was selected
+
+    if (
+
+      selectedParticipant &&
+
+      Number(selectedParticipant.id) === Number(participant.id)
+
+    ) {
+
+      setSelectedParticipant(null);
+
+    }
+
+
+
+    alert(
+
+      data.message ||
+
+        `Participant "${participant.name}" deleted successfully.`
+
+    );
+
+  } catch (error) {
+
+    console.error("Delete participant error:", error);
+
+
+
+    setError(
+
+      error.message ||
+
+        "Unable to delete participant."
+
+    );
+
+  } finally {
+
+    setDeletingId(null);
+
+  }
+
+};
+
+
+
+
+
+  // ==========================================
+
+
+
+  // DATE FORMAT
+
+
+
+  // ==========================================
+
+
+
+
+
+
+
+  const formatDate = (dateString) => {
+
+
+
+    if (!dateString) {
+
+
+
+      return "N/A";
+
+
+
+    }
+
+
+
+
+
+
+
+    const date = new Date(dateString);
+
+
+
+
+
+
+
+    return date.toLocaleDateString(
+
+
+
+      "en-IN",
+
+
+
+      {
+
+
+
+        day: "2-digit",
+
+
+
+        month: "short",
+
+
+
+        year: "numeric",
+
+
+
+      }
+
+
+
+    );
+
+
 
   };
 
 
 
+
+
+
+
+  const formatDateTime = (dateString) => {
+
+
+
+    if (!dateString) {
+
+
+
+      return "N/A";
+
+
+
+    }
+
+
+
+
+
+
+
+    const date = new Date(dateString);
+
+
+
+
+
+
+
+    return date.toLocaleString(
+
+
+
+      "en-IN",
+
+
+
+      {
+
+
+
+        day: "2-digit",
+
+
+
+        month: "short",
+
+
+
+        year: "numeric",
+
+
+
+        hour: "2-digit",
+
+
+
+        minute: "2-digit",
+
+
+
+      }
+
+
+
+    );
+
+
+
+  };
+
+
+
+
+
+
+
+  // ==========================================
+
+
+
+  // SEARCH + DATE FILTER
+
+
+
+  // ==========================================
+
+
+
+
+
+
+
+  const filteredParticipants =
+
+
+
+    participants.filter((participant) => {
+
+
+
+      const matchesSearch =
+
+
+
+        participant.name
+
+
+
+          .toLowerCase()
+
+
+
+          .includes(
+
+
+
+            searchTerm.toLowerCase()
+
+
+
+          );
+
+
+
+
+
+
+
+      let matchesDate = true;
+
+
+
+
+
+
+
+      if (dateFilter) {
+
+
+
+        const participantDate =
+
+
+
+          new Date(
+
+
+
+            participant.submitted_at
+
+
+
+          );
+
+
+
+
+
+
+
+        const year =
+
+
+
+          participantDate.getFullYear();
+
+
+
+
+
+
+
+        const month = String(
+
+
+
+          participantDate.getMonth() + 1
+
+
+
+        ).padStart(2, "0");
+
+
+
+
+
+
+
+        const day = String(
+
+
+
+          participantDate.getDate()
+
+
+
+        ).padStart(2, "0");
+
+
+
+
+
+
+
+        const participantDateString =
+
+
+
+          `${year}-${month}-${day}`;
+
+
+
+
+
+
+
+        matchesDate =
+
+
+
+          participantDateString ===
+
+
+
+          dateFilter;
+
+
+
+      }
+
+
+
+
+
+
+
+      return (
+
+
+
+        matchesSearch &&
+
+
+
+        matchesDate
+
+
+
+      );
+
+
+
+    });
+
+
+
+
+
+
+
+  // ==========================================
+
+
+
+  // CLEAR FILTERS
+
+
+
+  // ==========================================
+
+
+
+
+
+
+
+  const clearFilters = () => {
+
+
+
+    setSearchTerm("");
+
+
+
+    setDateFilter("");
+
+
+
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // ==========================================
+
+
+
+// EXPORT PARTICIPANTS TO CSV
+
+
+
+// ==========================================
+
+
+
+
+
+
+
+const exportParticipantsToCSV = () => {
+
+
+
+  if (filteredParticipants.length === 0) {
+
+
+
+    alert("No participants available to export.");
+
+
+
+    return;
+
+
+
+  }
+
+
+
+
+
+
+
+  const headers = [
+
+
+
+    "Participant ID",
+
+
+
+    "Name",
+
+
+
+    "Submitted Time",
+
+
+
+    "Question",
+
+
+
+    "Answer",
+
+
+
+  ];
+
+
+
+
+
+
+
+  const rows = [];
+
+
+
+
+
+
+
+  filteredParticipants.forEach((participant) => {
+
+
+
+    if (
+
+
+
+      !participant.responses ||
+
+
+
+      participant.responses.length === 0
+
+
+
+    ) {
+
+
+
+      rows.push([
+
+
+
+        participant.id,
+
+
+
+        participant.name,
+
+
+
+        formatDateTime(participant.submitted_at),
+
+
+
+        "",
+
+
+
+        "",
+
+
+
+      ]);
+
+
+
+
+
+
+
+      return;
+
+
+
+    }
+
+
+
+
+
+
+
+    participant.responses.forEach((response) => {
+
+
+
+      rows.push([
+
+
+
+        participant.id,
+
+
+
+        participant.name,
+
+
+
+        formatDateTime(participant.submitted_at),
+
+
+
+        response.question || "",
+
+
+
+        response.option || "",
+
+
+
+      ]);
+
+
+
+    });
+
+
+
+  });
+
+
+
+
+
+
+
+  const escapeCSV = (value) => {
+
+
+
+    const text = String(value ?? "");
+
+
+
+
+
+
+
+    return `"${text.replace(/"/g, '""')}"`;
+
+
+
+  };
+
+
+
+
+
+
+
   const csvContent = [
+
+
 
     headers.map(escapeCSV).join(","),
 
+
+
     ...rows.map((row) =>
+
+
 
       row.map(escapeCSV).join(",")
 
+
+
     ),
+
+
 
   ].join("\n");
 
 
 
+
+
+
+
   const blob = new Blob(
+
+
 
     ["\uFEFF" + csvContent],
 
+
+
     {
+
+
 
       type: "text/csv;charset=utf-8;",
 
+
+
     }
 
+
+
   );
+
+
+
+
 
 
 
@@ -900,29 +1684,57 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
   const link = document.createElement("a");
+
+
+
+
 
 
 
   link.href = url;
 
+
+
   link.download = `IPL_2029_Participants_${new Date()
 
+
+
     .toISOString()
+
+
 
     .slice(0, 10)}.csv`;
 
 
 
+
+
+
+
   document.body.appendChild(link);
+
+
 
   link.click();
 
 
 
+
+
+
+
   document.body.removeChild(link);
 
+
+
   URL.revokeObjectURL(url);
+
+
 
 };
 
@@ -932,33 +1744,71 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
+
+
+
+
   // ==========================================
+
+
 
   // LOGOUT
 
+
+
   // ==========================================
+
+
+
+
 
 
 
   const handleLogout = () => {
 
+
+
     onLogout();
+
+
 
   };
 
 
 
+
+
+
+
   return (
+
+
 
     <div className="admin-layout">
 
 
 
+
+
+
+
       {/* =====================================
+
+
 
           SIDEBAR
 
+
+
       ====================================== */}
+
+
+
+
 
 
 
@@ -966,29 +1816,59 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         <div className="sidebar-brand">
+
+
+
+
 
 
 
           <div className="sidebar-logo">
 
+
+
             🏏
 
+
+
           </div>
+
+
+
+
 
 
 
           <div>
 
+
+
             <h2>IPL 2029</h2>
 
+
+
             <p>Admin Panel</p>
+
+
 
           </div>
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -996,55 +1876,111 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           <button
+
+
 
             className="nav-item active"
 
+
+
             onClick={() =>
+
+
 
               navigate("/admin/dashboard")
 
+
+
             }
+
+
 
           >
 
+
+
             <span className="nav-icon">
+
+
 
               📊
 
+
+
             </span>
+
+
+
+
 
 
 
             Dashboard
 
+
+
           </button>
+
+
+
+
 
 
 
           <button
 
+
+
             className="nav-item"
+
+
 
             onClick={() =>
 
+
+
               navigate("/admin/analytics")
+
+
 
             }
 
+
+
           >
+
+
 
             <span className="nav-icon">
 
+
+
               📈
+
+
 
             </span>
 
 
 
+
+
+
+
             Analytics
 
+
+
           </button>
+
+
+
+
 
 
 
@@ -1052,7 +1988,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         <div className="sidebar-bottom">
+
+
+
+
 
 
 
@@ -1060,19 +2004,39 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             <div className="user-avatar">
+
+
 
               {username
 
+
+
                 ? username
+
+
 
                     .charAt(0)
 
+
+
                     .toUpperCase()
+
+
 
                 : "A"}
 
+
+
             </div>
+
+
+
+
 
 
 
@@ -1080,19 +2044,39 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <strong>
 
+
+
                 {username}
+
+
 
               </strong>
 
 
 
+
+
+
+
               <span>
+
+
 
                 Administrator
 
+
+
               </span>
+
+
+
+
 
 
 
@@ -1100,25 +2084,51 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
           <button
 
+
+
             className="logout-button"
+
+
 
             onClick={handleLogout}
 
+
+
           >
 
+
+
             🚪 Logout
+
+
 
           </button>
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -1126,11 +2136,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
       {/* =====================================
+
+
 
           MAIN
 
+
+
       ====================================== */}
+
+
+
+
 
 
 
@@ -1138,7 +2160,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         {/* HEADER */}
+
+
+
+
 
 
 
@@ -1146,51 +2176,103 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           <div>
+
+
+
+
 
 
 
             <p className="eyebrow">
 
+
+
               IPL 2029
 
+
+
             </p>
+
+
+
+
 
 
 
             <h1>
 
+
+
               Dashboard
+
+
 
             </h1>
 
 
 
+
+
+
+
             <p className="header-description">
+
+
 
               Manage your IPL 2029 prediction
 
+
+
               poll
+
+
 
             </p>
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
           <div className="header-user">
 
+
+
             Logged in as{" "}
+
+
 
             <strong>
 
+
+
               {username}
+
+
 
             </strong>
 
+
+
           </div>
+
+
+
+
 
 
 
@@ -1198,27 +2280,55 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         {/* ERROR */}
+
+
+
+
 
 
 
         {error && (
 
+
+
           <div className="dashboard-error">
+
+
 
             {error}
 
+
+
           </div>
+
+
 
         )}
 
 
 
+
+
+
+
         {/* =====================================
+
+
 
             STATS
 
+
+
         ====================================== */}
+
+
+
+
 
 
 
@@ -1226,15 +2336,31 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           <div className="stat-card">
+
+
+
+
 
 
 
             <div className="stat-icon blue">
 
+
+
               👥
 
+
+
             </div>
+
+
+
+
 
 
 
@@ -1242,19 +2368,39 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <span>
 
+
+
                 Total Participants
+
+
 
               </span>
 
 
 
+
+
+
+
               <strong>
+
+
 
                 {participants.length}
 
+
+
               </strong>
+
+
+
+
 
 
 
@@ -1262,19 +2408,39 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </div>
 
 
 
+
+
+
+
           <div className="stat-card">
+
+
+
+
 
 
 
             <div className="stat-icon green">
 
+
+
               ✓
 
+
+
             </div>
+
+
+
+
 
 
 
@@ -1282,35 +2448,71 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <span>
 
+
+
                 Poll Status
+
+
 
               </span>
 
 
 
+
+
+
+
               <strong
+
+
 
                 className={
 
+
+
                   pollStatus?.is_active
+
+
 
                     ? "status-active"
 
+
+
                     : "status-closed"
+
+
 
                 }
 
+
+
               >
+
+
 
                 {pollStatus?.is_active
 
+
+
                   ? "Active"
+
+
 
                   : "Closed"}
 
+
+
               </strong>
+
+
+
+
 
 
 
@@ -1318,7 +2520,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -1326,11 +2536,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             <div className="stat-icon red">
+
+
 
               ?
 
+
+
             </div>
+
+
+
+
 
 
 
@@ -1338,19 +2560,39 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <span>
 
+
+
                 Total Questions
+
+
 
               </span>
 
 
 
+
+
+
+
               <strong>
+
+
 
                 5
 
+
+
               </strong>
+
+
+
+
 
 
 
@@ -1358,7 +2600,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -1366,11 +2616,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         {/* =====================================
+
+
 
             POLL CONTROL
 
+
+
         ====================================== */}
+
+
+
+
 
 
 
@@ -1378,23 +2640,47 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           <div className="poll-control-left">
+
+
+
+
 
 
 
             <div
 
+
+
               className={`poll-status-dot ${
+
+
 
                 pollStatus?.is_active
 
+
+
                   ? "dot-active"
+
+
 
                   : "dot-closed"
 
+
+
               }`}
 
+
+
             ></div>
+
+
+
+
 
 
 
@@ -1402,23 +2688,47 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <h3>
 
+
+
                 IPL 2029 Prediction Poll
+
+
 
               </h3>
 
 
 
+
+
+
+
               <p>
+
+
 
                 {pollStatus?.is_active
 
+
+
                   ? "The poll is currently open for voting."
+
+
 
                   : "The poll is currently closed."}
 
+
+
               </p>
+
+
+
+
 
 
 
@@ -1426,7 +2736,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -1434,59 +2752,119 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             <span
+
+
 
               className={`poll-status-label ${
 
+
+
                 pollStatus?.is_active
+
+
 
                   ? "label-active"
 
+
+
                   : "label-closed"
+
+
 
               }`}
 
+
+
             >
+
+
 
               {pollStatus?.is_active
 
+
+
                 ? "OPEN"
 
+
+
                 : "CLOSED"}
+
+
 
             </span>
 
 
 
+
+
+
+
             <button
+
+
 
               className={`poll-main-button ${
 
+
+
                 pollStatus?.is_active
+
+
 
                   ? "main-close"
 
+
+
                   : "main-open"
+
+
 
               }`}
 
+
+
               onClick={handleTogglePoll}
+
+
 
               disabled={togglingPoll}
 
+
+
             >
+
+
 
               {togglingPoll
 
+
+
                 ? "Updating..."
+
+
 
                 : pollStatus?.is_active
 
+
+
                 ? "Close Poll"
+
+
 
                 : "Open Poll"}
 
+
+
             </button>
+
+
+
+
 
 
 
@@ -1494,15 +2872,31 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         </section>
+
+
+
+
 
 
 
         {/* =====================================
 
+
+
             PARTICIPANTS
 
+
+
         ====================================== */}
+
+
+
+
 
 
 
@@ -1510,7 +2904,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           <div className="section-header">
+
+
+
+
 
 
 
@@ -1518,19 +2920,39 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <h2>
 
+
+
                 Participants
+
+
 
               </h2>
 
 
 
+
+
+
+
               <p>
+
+
 
                 View and manage poll participants
 
+
+
               </p>
+
+
+
+
 
 
 
@@ -1538,15 +2960,31 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             <span className="participant-count">
 
+
+
               {filteredParticipants.length} shown
+
+
 
             </span>
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -1554,25 +2992,51 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           <div className="table-toolbar">
+
+
+
+
 
 
 
             <div
 
+
+
               style={{
+
+
 
                 display: "flex",
 
+
+
                 gap: "10px",
+
+
 
                 alignItems: "center",
 
+
+
                 flexWrap: "wrap",
+
+
 
               }}
 
+
+
             >
+
+
+
+
 
 
 
@@ -1580,41 +3044,83 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <div className="search-box">
+
+
+
+
 
 
 
                 <span className="search-icon">
 
+
+
                   🔍
+
+
 
                 </span>
 
 
 
+
+
+
+
                 <input
+
+
 
                   type="text"
 
+
+
                   placeholder="Search participants..."
+
+
 
                   value={searchTerm}
 
+
+
                   onChange={(event) =>
+
+
 
                     setSearchTerm(
 
+
+
                       event.target.value
+
+
 
                     )
 
+
+
                   }
+
+
 
                 />
 
 
 
+
+
+
+
               </div>
+
+
+
+
 
 
 
@@ -1622,39 +3128,79 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <div className="date-filter-box">
+
+
+
+
 
 
 
                 <span>
 
+
+
                   📅
+
+
 
                 </span>
 
 
 
+
+
+
+
                 <input
+
+
 
                   type="date"
 
+
+
                   value={dateFilter}
+
+
 
                   onChange={(event) =>
 
+
+
                     setDateFilter(
+
+
 
                       event.target.value
 
+
+
                     )
 
+
+
                   }
+
+
 
                 />
 
 
 
+
+
+
+
               </div>
+
+
+
+
 
 
 
@@ -1662,27 +3208,55 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               {(searchTerm ||
+
+
 
                 dateFilter) && (
 
+
+
                 <button
+
+
 
                   className="clear-filter-button"
 
+
+
                   onClick={clearFilters}
+
+
 
                 >
 
+
+
                   Clear
 
+
+
                 </button>
+
+
 
               )}
 
 
 
+
+
+
+
             </div>
+
+
+
+
 
 
 
@@ -1690,32 +3264,65 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                       {/* EXPORT CSV */}
 
+
+
           <button
+
             className="refresh-button"
+
             onClick={exportParticipantsToCSV}
+
             style={{
+
               background: "#16a34a",
+
               color: "#ffffff",
+
               border: "none",
+
             }}
+
           >
+
             📥 Export CSV
+
           </button>
+
+
 
           {/* REFRESH */}
 
+
+
           <button
+
             className="refresh-button"
+
             onClick={handleRefresh}
+
           >
+
             🔄 Refresh
+
           </button>
+
+
+
+
 
 
 
           </div>
+
+
+
+
 
 
 
@@ -1723,45 +3330,91 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           {!loading && (
+
+
 
             <div
 
+
+
               style={{
+
+
 
                 padding:
 
+
+
                   "0 24px 15px",
+
+
 
                 fontSize: "12px",
 
+
+
                 color: "#8992a2",
+
+
 
               }}
 
+
+
             >
+
+
 
               Showing{" "}
 
+
+
               <strong>
+
+
 
                 {filteredParticipants.length}
 
+
+
               </strong>{" "}
+
+
 
               of{" "}
 
+
+
               <strong>
+
+
 
                 {participants.length}
 
+
+
               </strong>{" "}
+
+
 
               participants
 
+
+
             </div>
 
+
+
           )}
+
+
+
+
 
 
 
@@ -1769,7 +3422,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           <div className="participants-table-wrapper">
+
+
+
+
 
 
 
@@ -1777,7 +3438,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <div className="empty-state">
+
+
+
+
 
 
 
@@ -1785,11 +3454,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 <p>
+
+
 
                   Loading participants...
 
+
+
                 </p>
+
+
+
+
 
 
 
@@ -1797,9 +3478,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             ) : filteredParticipants.length ===
 
+
+
               0 ? (
+
+
+
+
 
 
 
@@ -1807,35 +3498,71 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 <div className="empty-icon">
 
+
+
                   👥
+
+
 
                 </div>
 
 
 
+
+
+
+
                 <h3>
 
+
+
                   No participants found
+
+
 
                 </h3>
 
 
 
+
+
+
+
                 <p>
+
+
 
                   {searchTerm || dateFilter
 
+
+
                     ? "Try changing your search or date filter."
 
+
+
                     : "No participants have submitted the poll yet."}
+
+
 
                 </p>
 
 
 
+
+
+
+
               </div>
+
+
+
+
 
 
 
@@ -1843,7 +3570,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <table className="participants-table">
+
+
+
+
 
 
 
@@ -1851,39 +3586,79 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   <tr>
 
 
 
+
+
+
+
                     <th>
+
+
 
                       #
 
+
+
                     </th>
 
 
 
+
+
+
+
                     <th>
+
+
 
                       Participant
 
+
+
                     </th>
 
 
 
+
+
+
+
                     <th>
+
+
 
                       Submitted At
 
+
+
                     </th>
+
+
+
+
 
 
 
                     <th>
 
+
+
                       Actions
 
+
+
                     </th>
+
+
+
+
 
 
 
@@ -1891,7 +3666,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 </thead>
+
+
+
+
 
 
 
@@ -1899,33 +3682,67 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                   {filteredParticipants.map(
+
+
 
                     (participant, index) => (
 
 
 
+
+
+
+
                       <tr
+
+
 
                         key={
 
+
+
                           participant.id
 
+
+
                         }
+
+
 
                       >
 
 
 
+
+
+
+
                         <td className="serial-number">
 
+
+
                           {index + 1}
+
+
 
                         </td>
 
 
 
+
+
+
+
                         <td>
+
+
+
+
 
 
 
@@ -1933,23 +3750,47 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                             <div className="participant-avatar">
+
+
 
                               {participant.name
 
+
+
                                 .charAt(0)
 
+
+
                                 .toUpperCase()}
+
+
 
                             </div>
 
 
 
+
+
+
+
                             <strong>
+
+
 
                               {participant.name}
 
+
+
                             </strong>
+
+
+
+
 
 
 
@@ -1957,55 +3798,111 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                         </td>
 
 
 
+
+
+
+
                         <td>
+
+
+
+
 
 
 
                           <div>
 
+
+
                             <strong>
+
+
 
                               {formatDate(
 
+
+
                                 participant.submitted_at
 
+
+
                               )}
+
+
 
                             </strong>
 
 
 
+
+
+
+
                             <div
+
+
 
                               style={{
 
+
+
                                 marginTop: "3px",
+
+
 
                                 fontSize: "11px",
 
+
+
                                 color: "#9aa3b2",
+
+
 
                               }}
 
+
+
                             >
+
+
 
                               {formatDateTime(
 
+
+
                                 participant.submitted_at
+
+
 
                               )}
 
+
+
                             </div>
+
+
 
                           </div>
 
 
 
+
+
+
+
                         </td>
+
+
+
+
 
 
 
@@ -2013,127 +3910,255 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                           <div
+
+
 
                             style={{
 
+
+
                               display: "flex",
+
+
 
                               gap: "8px",
 
+
+
                               flexWrap: "wrap",
 
+
+
                             }}
+
+
 
                           >
 
 
 
+
+
+
+
                             <button
+
+
 
                               className="view-button"
 
+
+
                               onClick={() =>
+
+
 
                                 setSelectedParticipant(
 
+
+
                                   participant
+
+
 
                                 )
 
+
+
                               }
+
+
 
                             >
 
+
+
                               View Answers
 
+
+
                             </button>
+
+
+
+
 
 
 
                             <button
 
+
+
                               className="delete-button"
+
+
 
                               onClick={() =>
 
+
+
                                 handleDeleteParticipant(
+
+
 
                                   participant
 
+
+
                                 )
 
+
+
                               }
+
+
 
                               disabled={
 
+
+
                                 deletingId ===
+
+
 
                                 participant.id
 
+
+
                               }
+
+
 
                               style={{
 
+
+
                                 border: "none",
+
+
 
                                 background:
 
+
+
                                   "#fee2e2",
+
+
 
                                 color:
 
+
+
                                   "#dc2626",
+
+
 
                                 borderRadius:
 
+
+
                                   "7px",
+
+
 
                                 padding:
 
+
+
                                   "8px 11px",
+
+
 
                                 fontSize:
 
+
+
                                   "11px",
+
+
 
                                 fontWeight:
 
+
+
                                   "700",
+
+
 
                                 cursor:
 
+
+
                                   deletingId ===
 
+
+
                                   participant.id
+
+
 
                                     ? "not-allowed"
 
+
+
                                     : "pointer",
+
+
 
                                 opacity:
 
+
+
                                   deletingId ===
+
+
 
                                   participant.id
 
+
+
                                     ? 0.6
+
+
 
                                     : 1,
 
+
+
                               }}
+
+
 
                             >
 
+
+
                               {deletingId ===
+
+
 
                               participant.id
 
+
+
                                 ? "Deleting..."
+
+
 
                                 : "Delete"}
 
+
+
                             </button>
+
+
+
+
 
 
 
@@ -2141,7 +4166,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                         </td>
+
+
+
+
 
 
 
@@ -2149,9 +4182,19 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     )
 
+
+
                   )}
+
+
+
+
 
 
 
@@ -2159,7 +4202,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               </table>
+
+
+
+
 
 
 
@@ -2167,7 +4218,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -2175,15 +4234,31 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
       </main>
+
+
+
+
 
 
 
       {/* =====================================
 
+
+
           ANSWERS MODAL
 
+
+
       ====================================== */}
+
+
+
+
 
 
 
@@ -2191,31 +4266,63 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
         <div
+
+
 
           className="modal-overlay"
 
+
+
           onClick={() =>
+
+
 
             setSelectedParticipant(null)
 
+
+
           }
+
+
 
         >
 
 
 
+
+
+
+
           <div
+
+
 
             className="answers-modal"
 
+
+
             onClick={(event) =>
+
+
 
               event.stopPropagation()
 
+
+
             }
 
+
+
           >
+
+
+
+
 
 
 
@@ -2223,23 +4330,47 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <div>
+
+
+
+
 
 
 
                 <h2>
 
+
+
                   Participant Answers
+
+
 
                 </h2>
 
 
 
+
+
+
+
                 <p>
+
+
 
                   {selectedParticipant.name}
 
+
+
                 </p>
+
+
+
+
 
 
 
@@ -2247,25 +4378,51 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <button
+
+
 
                 className="modal-close"
 
+
+
                 onClick={() =>
+
+
 
                   setSelectedParticipant(null)
 
+
+
                 }
+
+
 
               >
 
+
+
                 ✕
+
+
 
               </button>
 
 
 
+
+
+
+
             </div>
+
+
+
+
 
 
 
@@ -2273,29 +4430,59 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <strong>
 
+
+
                 {selectedParticipant.name}
+
+
 
               </strong>
 
 
 
+
+
+
+
               <span>
+
+
 
                 Submitted:{" "}
 
+
+
                 {formatDateTime(
+
+
 
                   selectedParticipant.submitted_at
 
+
+
                 )}
+
+
 
               </span>
 
 
 
+
+
+
+
             </div>
+
+
+
+
 
 
 
@@ -2303,35 +4490,71 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               {selectedParticipant.responses &&
 
+
+
               selectedParticipant.responses.length >
+
+
 
                 0 ? (
 
 
 
+
+
+
+
                 selectedParticipant.responses.map(
+
+
 
                   (response, index) => (
 
 
 
+
+
+
+
                     <div
+
+
 
                       className="answer-card"
 
+
+
                       key={index}
+
+
 
                     >
 
 
 
+
+
+
+
                       <div className="question-number">
+
+
 
                         {index + 1}
 
+
+
                       </div>
+
+
+
+
 
 
 
@@ -2339,19 +4562,39 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                         <h4>
 
+
+
                           {response.question}
+
+
 
                         </h4>
 
 
 
+
+
+
+
                         <p>
+
+
 
                           {response.option}
 
+
+
                         </p>
+
+
+
+
 
 
 
@@ -2359,13 +4602,27 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                     </div>
+
+
+
+
 
 
 
                   )
 
+
+
                 )
+
+
+
+
 
 
 
@@ -2373,11 +4630,23 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
                 <div className="empty-state">
+
+
 
                   No answers available.
 
+
+
                 </div>
+
+
+
+
 
 
 
@@ -2385,7 +4654,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
             </div>
+
+
+
+
 
 
 
@@ -2393,21 +4670,43 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
               <button
+
+
 
                 className="modal-done-button"
 
+
+
                 onClick={() =>
+
+
 
                   setSelectedParticipant(null)
 
+
+
                 }
+
+
 
               >
 
+
+
                 Close
 
+
+
               </button>
+
+
+
+
 
 
 
@@ -2415,7 +4714,15 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -2423,15 +4730,31 @@ const exportParticipantsToCSV = () => {
 
 
 
+
+
+
+
       )}
+
+
+
+
 
 
 
     </div>
 
+
+
   );
 
+
+
 }
+
+
+
+
 
 
 
