@@ -1,0 +1,1629 @@
+[
+{
+  "model": "polls.poll",
+  "pk": 1,
+  "fields": {
+    "title": "IPL 2029 Prediction Poll",
+    "is_active": true,
+    "created_at": "2026-10-01T08:24:36.679Z"
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 1,
+  "fields": {
+    "poll": 1,
+    "text": "Which IPL team will win IPL 2029?",
+    "order": 1
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 2,
+  "fields": {
+    "poll": 1,
+    "text": "Why can this team win IPL 2029?",
+    "order": 2
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 3,
+  "fields": {
+    "poll": 1,
+    "text": "What is the biggest challenge for this team in IPL 2029?",
+    "order": 3
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 4,
+  "fields": {
+    "poll": 1,
+    "text": "What is the most important factor for winning IPL 2029?",
+    "order": 4
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 5,
+  "fields": {
+    "poll": 1,
+    "text": "How confident are you about your prediction?",
+    "order": 5
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 1,
+  "fields": {
+    "question": 1,
+    "text": "RCB"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 2,
+  "fields": {
+    "question": 1,
+    "text": "CSK"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 3,
+  "fields": {
+    "question": 1,
+    "text": "RR"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 4,
+  "fields": {
+    "question": 1,
+    "text": "KKR"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 5,
+  "fields": {
+    "question": 1,
+    "text": "SRH"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 6,
+  "fields": {
+    "question": 1,
+    "text": "PBKS"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 7,
+  "fields": {
+    "question": 1,
+    "text": "DC"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 8,
+  "fields": {
+    "question": 1,
+    "text": "MI"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 9,
+  "fields": {
+    "question": 1,
+    "text": "GT"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 10,
+  "fields": {
+    "question": 1,
+    "text": "LSG"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 11,
+  "fields": {
+    "question": 2,
+    "text": "Strong batting"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 12,
+  "fields": {
+    "question": 2,
+    "text": "Strong bowling"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 13,
+  "fields": {
+    "question": 2,
+    "text": "Good captaincy"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 14,
+  "fields": {
+    "question": 2,
+    "text": "Strong all-rounders"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 15,
+  "fields": {
+    "question": 2,
+    "text": "Previous performance"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 16,
+  "fields": {
+    "question": 2,
+    "text": "Team consistency"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 17,
+  "fields": {
+    "question": 2,
+    "text": "Good team combination"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 18,
+  "fields": {
+    "question": 2,
+    "text": "Experienced players"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 19,
+  "fields": {
+    "question": 2,
+    "text": "Young talented players"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 20,
+  "fields": {
+    "question": 2,
+    "text": "Other"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 21,
+  "fields": {
+    "question": 3,
+    "text": "Injuries"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 22,
+  "fields": {
+    "question": 3,
+    "text": "Poor batting"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 23,
+  "fields": {
+    "question": 3,
+    "text": "Poor bowling"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 24,
+  "fields": {
+    "question": 3,
+    "text": "Pressure"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 25,
+  "fields": {
+    "question": 3,
+    "text": "Team combination"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 26,
+  "fields": {
+    "question": 3,
+    "text": "Captaincy"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 27,
+  "fields": {
+    "question": 3,
+    "text": "Lack of experience"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 28,
+  "fields": {
+    "question": 3,
+    "text": "Inconsistent performance"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 29,
+  "fields": {
+    "question": 3,
+    "text": "Player form"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 30,
+  "fields": {
+    "question": 3,
+    "text": "Other"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 31,
+  "fields": {
+    "question": 4,
+    "text": "Strong batting"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 32,
+  "fields": {
+    "question": 4,
+    "text": "Strong bowling"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 33,
+  "fields": {
+    "question": 4,
+    "text": "Quality all-rounders"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 34,
+  "fields": {
+    "question": 4,
+    "text": "Good captaincy"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 35,
+  "fields": {
+    "question": 4,
+    "text": "Team combination"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 36,
+  "fields": {
+    "question": 4,
+    "text": "Player experience"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 37,
+  "fields": {
+    "question": 4,
+    "text": "Young talented players"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 38,
+  "fields": {
+    "question": 4,
+    "text": "Consistency"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 39,
+  "fields": {
+    "question": 4,
+    "text": "Player fitness"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 40,
+  "fields": {
+    "question": 4,
+    "text": "Match strategy"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 41,
+  "fields": {
+    "question": 4,
+    "text": "Pressure handling"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 42,
+  "fields": {
+    "question": 4,
+    "text": "Strong fielding"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 43,
+  "fields": {
+    "question": 4,
+    "text": "Bench strength"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 44,
+  "fields": {
+    "question": 4,
+    "text": "Home advantage"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 45,
+  "fields": {
+    "question": 4,
+    "text": "Other"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 46,
+  "fields": {
+    "question": 4,
+    "text": "Other"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 47,
+  "fields": {
+    "question": 5,
+    "text": "Very confident"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 48,
+  "fields": {
+    "question": 5,
+    "text": "Confident"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 49,
+  "fields": {
+    "question": 5,
+    "text": "Neutral"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 50,
+  "fields": {
+    "question": 5,
+    "text": "Not very confident"
+  }
+},
+{
+  "model": "polls.option",
+  "pk": 51,
+  "fields": {
+    "question": 5,
+    "text": "Not confident"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 2,
+  "fields": {
+    "name": "Anup",
+    "submitted_at": "2026-10-02T08:38:59.360Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 3,
+  "fields": {
+    "name": "Test User",
+    "submitted_at": "2026-10-02T08:58:07.418Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 4,
+  "fields": {
+    "name": "Sachin.Desai",
+    "submitted_at": "2026-10-02T09:05:04.375Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 5,
+  "fields": {
+    "name": "Validation Test",
+    "submitted_at": "2026-10-02T09:12:42.793Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 7,
+  "fields": {
+    "name": "Bhartesh",
+    "submitted_at": "2026-10-02T13:16:12.096Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 8,
+  "fields": {
+    "name": "Vinay",
+    "submitted_at": "2026-10-03T07:11:02.938Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 10,
+  "fields": {
+    "name": "KUMAR PATIL.",
+    "submitted_at": "2026-10-04T09:27:20.019Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 11,
+  "fields": {
+    "name": "PRATEEK PATIL",
+    "submitted_at": "2026-10-04T09:39:22.611Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 12,
+  "fields": {
+    "name": "VAIBHAV PATIL",
+    "submitted_at": "2026-10-05T09:09:26.783Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 13,
+  "fields": {
+    "name": "VIJAY",
+    "submitted_at": "2026-10-05T09:48:13.530Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 14,
+  "fields": {
+    "name": "dattu",
+    "submitted_at": "2026-10-05T10:13:12.356Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 15,
+  "fields": {
+    "name": "hey",
+    "submitted_at": "2026-10-05T10:14:21.378Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 16,
+  "fields": {
+    "name": "hi",
+    "submitted_at": "2026-10-05T10:58:25.985Z"
+  }
+},
+{
+  "model": "polls.participant",
+  "pk": 17,
+  "fields": {
+    "name": "anupppp",
+    "submitted_at": "2026-10-05T11:12:33.449Z"
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 6,
+  "fields": {
+    "participant": 2,
+    "question": 1,
+    "selected_option": 1
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 7,
+  "fields": {
+    "participant": 2,
+    "question": 2,
+    "selected_option": 11
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 8,
+  "fields": {
+    "participant": 2,
+    "question": 3,
+    "selected_option": 29
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 9,
+  "fields": {
+    "participant": 2,
+    "question": 4,
+    "selected_option": 31
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 10,
+  "fields": {
+    "participant": 2,
+    "question": 5,
+    "selected_option": 47
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 11,
+  "fields": {
+    "participant": 3,
+    "question": 1,
+    "selected_option": 1
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 12,
+  "fields": {
+    "participant": 3,
+    "question": 1,
+    "selected_option": 2
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 13,
+  "fields": {
+    "participant": 3,
+    "question": 2,
+    "selected_option": 11
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 14,
+  "fields": {
+    "participant": 3,
+    "question": 2,
+    "selected_option": 12
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 15,
+  "fields": {
+    "participant": 3,
+    "question": 3,
+    "selected_option": 21
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 16,
+  "fields": {
+    "participant": 3,
+    "question": 3,
+    "selected_option": 22
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 17,
+  "fields": {
+    "participant": 3,
+    "question": 4,
+    "selected_option": 31
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 18,
+  "fields": {
+    "participant": 3,
+    "question": 4,
+    "selected_option": 32
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 19,
+  "fields": {
+    "participant": 3,
+    "question": 5,
+    "selected_option": 47
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 20,
+  "fields": {
+    "participant": 4,
+    "question": 1,
+    "selected_option": 1
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 21,
+  "fields": {
+    "participant": 4,
+    "question": 2,
+    "selected_option": 11
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 22,
+  "fields": {
+    "participant": 4,
+    "question": 2,
+    "selected_option": 12
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 23,
+  "fields": {
+    "participant": 4,
+    "question": 3,
+    "selected_option": 22
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 24,
+  "fields": {
+    "participant": 4,
+    "question": 4,
+    "selected_option": 34
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 25,
+  "fields": {
+    "participant": 4,
+    "question": 4,
+    "selected_option": 36
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 26,
+  "fields": {
+    "participant": 4,
+    "question": 4,
+    "selected_option": 38
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 27,
+  "fields": {
+    "participant": 4,
+    "question": 5,
+    "selected_option": 47
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 28,
+  "fields": {
+    "participant": 4,
+    "question": 5,
+    "selected_option": 48
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 29,
+  "fields": {
+    "participant": 5,
+    "question": 1,
+    "selected_option": 1
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 30,
+  "fields": {
+    "participant": 5,
+    "question": 1,
+    "selected_option": 2
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 31,
+  "fields": {
+    "participant": 5,
+    "question": 2,
+    "selected_option": 11
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 32,
+  "fields": {
+    "participant": 5,
+    "question": 2,
+    "selected_option": 12
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 33,
+  "fields": {
+    "participant": 5,
+    "question": 3,
+    "selected_option": 21
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 34,
+  "fields": {
+    "participant": 5,
+    "question": 4,
+    "selected_option": 31
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 35,
+  "fields": {
+    "participant": 5,
+    "question": 4,
+    "selected_option": 32
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 36,
+  "fields": {
+    "participant": 5,
+    "question": 5,
+    "selected_option": 47
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 37,
+  "fields": {
+    "participant": 7,
+    "question": 1,
+    "selected_option": 5
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 38,
+  "fields": {
+    "participant": 7,
+    "question": 2,
+    "selected_option": 11
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 39,
+  "fields": {
+    "participant": 7,
+    "question": 3,
+    "selected_option": 26
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 40,
+  "fields": {
+    "participant": 7,
+    "question": 4,
+    "selected_option": 33
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 41,
+  "fields": {
+    "participant": 7,
+    "question": 5,
+    "selected_option": 48
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 42,
+  "fields": {
+    "participant": 8,
+    "question": 1,
+    "selected_option": 1
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 43,
+  "fields": {
+    "participant": 8,
+    "question": 1,
+    "selected_option": 2
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 44,
+  "fields": {
+    "participant": 8,
+    "question": 2,
+    "selected_option": 14
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 45,
+  "fields": {
+    "participant": 8,
+    "question": 2,
+    "selected_option": 15
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 46,
+  "fields": {
+    "participant": 8,
+    "question": 3,
+    "selected_option": 25
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 47,
+  "fields": {
+    "participant": 8,
+    "question": 4,
+    "selected_option": 36
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 48,
+  "fields": {
+    "participant": 8,
+    "question": 4,
+    "selected_option": 40
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 49,
+  "fields": {
+    "participant": 8,
+    "question": 5,
+    "selected_option": 49
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 50,
+  "fields": {
+    "participant": 10,
+    "question": 1,
+    "selected_option": 9
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 51,
+  "fields": {
+    "participant": 10,
+    "question": 2,
+    "selected_option": 17
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 52,
+  "fields": {
+    "participant": 10,
+    "question": 3,
+    "selected_option": 25
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 53,
+  "fields": {
+    "participant": 10,
+    "question": 3,
+    "selected_option": 26
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 54,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 31
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 55,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 32
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 56,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 33
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 57,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 35
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 58,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 34
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 59,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 36
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 60,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 38
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 61,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 39
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 62,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 41
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 63,
+  "fields": {
+    "participant": 10,
+    "question": 4,
+    "selected_option": 42
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 64,
+  "fields": {
+    "participant": 10,
+    "question": 5,
+    "selected_option": 47
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 65,
+  "fields": {
+    "participant": 10,
+    "question": 5,
+    "selected_option": 48
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 66,
+  "fields": {
+    "participant": 11,
+    "question": 1,
+    "selected_option": 8
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 67,
+  "fields": {
+    "participant": 11,
+    "question": 2,
+    "selected_option": 11
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 68,
+  "fields": {
+    "participant": 11,
+    "question": 2,
+    "selected_option": 12
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 69,
+  "fields": {
+    "participant": 11,
+    "question": 2,
+    "selected_option": 13
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 70,
+  "fields": {
+    "participant": 11,
+    "question": 2,
+    "selected_option": 14
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 71,
+  "fields": {
+    "participant": 11,
+    "question": 3,
+    "selected_option": 25
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 72,
+  "fields": {
+    "participant": 11,
+    "question": 3,
+    "selected_option": 26
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 73,
+  "fields": {
+    "participant": 11,
+    "question": 3,
+    "selected_option": 27
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 74,
+  "fields": {
+    "participant": 11,
+    "question": 3,
+    "selected_option": 28
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 75,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 31
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 76,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 32
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 77,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 34
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 78,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 35
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 79,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 38
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 80,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 36
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 81,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 39
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 82,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 40
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 83,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 41
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 84,
+  "fields": {
+    "participant": 11,
+    "question": 4,
+    "selected_option": 43
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 85,
+  "fields": {
+    "participant": 11,
+    "question": 5,
+    "selected_option": 47
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 86,
+  "fields": {
+    "participant": 12,
+    "question": 1,
+    "selected_option": 1
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 87,
+  "fields": {
+    "participant": 12,
+    "question": 2,
+    "selected_option": 15
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 88,
+  "fields": {
+    "participant": 12,
+    "question": 2,
+    "selected_option": 13
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 89,
+  "fields": {
+    "participant": 12,
+    "question": 3,
+    "selected_option": 25
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 90,
+  "fields": {
+    "participant": 12,
+    "question": 3,
+    "selected_option": 27
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 91,
+  "fields": {
+    "participant": 12,
+    "question": 3,
+    "selected_option": 28
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 92,
+  "fields": {
+    "participant": 12,
+    "question": 3,
+    "selected_option": 26
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 93,
+  "fields": {
+    "participant": 12,
+    "question": 4,
+    "selected_option": 31
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 94,
+  "fields": {
+    "participant": 12,
+    "question": 4,
+    "selected_option": 32
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 95,
+  "fields": {
+    "participant": 12,
+    "question": 5,
+    "selected_option": 47
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 96,
+  "fields": {
+    "participant": 12,
+    "question": 5,
+    "selected_option": 48
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 97,
+  "fields": {
+    "participant": 13,
+    "question": 1,
+    "selected_option": 7
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 98,
+  "fields": {
+    "participant": 13,
+    "question": 2,
+    "selected_option": 11
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 99,
+  "fields": {
+    "participant": 13,
+    "question": 3,
+    "selected_option": 23
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 100,
+  "fields": {
+    "participant": 13,
+    "question": 4,
+    "selected_option": 31
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 101,
+  "fields": {
+    "participant": 13,
+    "question": 4,
+    "selected_option": 32
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 102,
+  "fields": {
+    "participant": 13,
+    "question": 5,
+    "selected_option": 48
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 103,
+  "fields": {
+    "participant": 14,
+    "question": 1,
+    "selected_option": 5
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 104,
+  "fields": {
+    "participant": 14,
+    "question": 2,
+    "selected_option": 11
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 105,
+  "fields": {
+    "participant": 14,
+    "question": 3,
+    "selected_option": 21
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 106,
+  "fields": {
+    "participant": 14,
+    "question": 4,
+    "selected_option": 31
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 107,
+  "fields": {
+    "participant": 14,
+    "question": 5,
+    "selected_option": 47
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 108,
+  "fields": {
+    "participant": 15,
+    "question": 1,
+    "selected_option": 1
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 109,
+  "fields": {
+    "participant": 15,
+    "question": 2,
+    "selected_option": 11
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 110,
+  "fields": {
+    "participant": 15,
+    "question": 3,
+    "selected_option": 21
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 111,
+  "fields": {
+    "participant": 15,
+    "question": 4,
+    "selected_option": 35
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 112,
+  "fields": {
+    "participant": 15,
+    "question": 5,
+    "selected_option": 47
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 113,
+  "fields": {
+    "participant": 16,
+    "question": 1,
+    "selected_option": 6
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 114,
+  "fields": {
+    "participant": 16,
+    "question": 2,
+    "selected_option": 12
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 115,
+  "fields": {
+    "participant": 16,
+    "question": 3,
+    "selected_option": 22
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 116,
+  "fields": {
+    "participant": 16,
+    "question": 4,
+    "selected_option": 32
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 117,
+  "fields": {
+    "participant": 16,
+    "question": 5,
+    "selected_option": 48
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 118,
+  "fields": {
+    "participant": 17,
+    "question": 1,
+    "selected_option": 3
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 119,
+  "fields": {
+    "participant": 17,
+    "question": 2,
+    "selected_option": 15
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 120,
+  "fields": {
+    "participant": 17,
+    "question": 3,
+    "selected_option": 23
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 121,
+  "fields": {
+    "participant": 17,
+    "question": 4,
+    "selected_option": 41
+  }
+},
+{
+  "model": "polls.response",
+  "pk": 122,
+  "fields": {
+    "participant": 17,
+    "question": 5,
+    "selected_option": 47
+  }
+}
+]
