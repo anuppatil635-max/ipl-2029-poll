@@ -1,76 +1,79 @@
 /* =====================================================
+
    GLOBAL
+
 ===================================================== */
 
 * {
+
   box-sizing: border-box;
+
 }
 
 html,
+
 body,
+
 #root {
+
   width: 100%;
+
   min-width: 100%;
+
   min-height: 100%;
+
   margin: 0;
+
   padding: 0;
+
 }
 
 body {
+
   font-family:
+
     Inter,
+
     Arial,
+
     Helvetica,
+
     sans-serif;
 
-  background: #020817;
+  background: #071A33;
+
 }
 
-
 /* =====================================================
+
    MAIN PAGE
+
 ===================================================== */
 
 .poll-page {
+
   position: relative;
 
   width: 100%;
+
   min-height: 100vh;
 
   overflow: hidden;
 
   color: #ffffff;
 
-  background:
-    radial-gradient(
-      circle at 50% 42%,
-      rgba(37, 99, 235, 0.55),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 10% 90%,
-      rgba(30, 64, 175, 0.30),
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 90% 10%,
-      rgba(29, 78, 216, 0.24),
-      transparent 30%
-    ),
-    linear-gradient(
-      135deg,
-      #020617 0%,
-      #06142e 45%,
-      #08245a 100%
-    );
+  background: #071A33;
+
 }
 
-
 /* =====================================================
+
    HEADER
+
 ===================================================== */
 
 .poll-header {
+
   position: relative;
 
   width: 100%;
@@ -88,16 +91,19 @@ body {
   z-index: 10;
 
   border-bottom:
+
     1px solid
+
     rgba(148, 163, 184, 0.08);
 
-  background:
-    rgba(2, 8, 23, 0.35);
+  background: #071A33;
 
   backdrop-filter: blur(14px);
+
 }
 
 .poll-brand {
+
   display: flex;
 
   align-items: center;
@@ -107,21 +113,27 @@ body {
   font-weight: 800;
 
   letter-spacing: 1px;
+
 }
 
 .brand-ipl {
+
   color: #ffffff;
 
   font-size: 19px;
+
 }
 
 .brand-year {
+
   color: #facc15;
 
   font-size: 19px;
+
 }
 
 .header-label {
+
   color: #a8b8d4;
 
   font-size: 11px;
@@ -129,23 +141,29 @@ body {
   font-weight: 700;
 
   letter-spacing: 2px;
+
 }
 
-
 /* =====================================================
+
    HERO
+
 ===================================================== */
 
 .hero-section {
+
   position: relative;
 
   width: 100%;
 
   min-height:
+
     calc(100vh - 86px);
 
   padding:
+
     55px 7%
+
     75px;
 
   display: flex;
@@ -155,9 +173,11 @@ body {
   justify-content: center;
 
   overflow: hidden;
+
 }
 
 .hero-content {
+
   position: relative;
 
   width: 100%;
@@ -167,7 +187,9 @@ body {
   display: grid;
 
   grid-template-columns:
+
     minmax(0, 1fr)
+
     minmax(420px, 0.85fr);
 
   align-items: center;
@@ -175,22 +197,27 @@ body {
   gap: 70px;
 
   z-index: 3;
+
 }
 
-
 /* =====================================================
+
    HERO LEFT
+
 ===================================================== */
 
 .hero-left {
+
   position: relative;
 
   z-index: 4;
 
   max-width: 650px;
+
 }
 
 .hero-trophy {
+
   width: 64px;
 
   height: 64px;
@@ -206,13 +233,19 @@ body {
   font-size: 38px;
 
   filter:
+
     drop-shadow(
+
       0 8px 20px
+
       rgba(250, 204, 21, 0.35)
+
     );
+
 }
 
 .hero-label {
+
   margin-bottom: 18px;
 
   color: #facc15;
@@ -222,14 +255,17 @@ body {
   font-weight: 800;
 
   letter-spacing: 4px;
+
 }
 
 .hero-left h1 {
+
   margin: 0;
 
   color: #ffffff;
 
   font-size:
+
     clamp(52px, 6vw, 88px);
 
   line-height: 0.98;
@@ -239,24 +275,33 @@ body {
   letter-spacing: -4px;
 
   text-shadow:
+
     0 12px 45px
+
     rgba(0, 0, 0, 0.30);
+
 }
 
 .hero-left h1 span {
+
   color: #facc15;
 
   display: inline-block;
 
   text-shadow:
+
     0 8px 30px
+
     rgba(250, 204, 21, 0.20);
+
 }
 
 .hero-description {
+
   max-width: 570px;
 
   margin:
+
     28px 0 30px;
 
   color: #c5d3ea;
@@ -264,14 +309,17 @@ body {
   font-size: 16px;
 
   line-height: 1.7;
+
 }
 
-
 /* =====================================================
+
    NAME BOX
+
 ===================================================== */
 
 .name-box {
+
   width: 100%;
 
   max-width: 600px;
@@ -283,22 +331,27 @@ body {
   overflow: hidden;
 
   border:
+
     1px solid
+
     rgba(147, 197, 253, 0.65);
 
   border-radius: 12px;
 
-  background:
-    rgba(15, 35, 72, 0.78);
+  background: #071A33;
 
   box-shadow:
+
     0 18px 45px
+
     rgba(0, 0, 0, 0.25);
 
   backdrop-filter: blur(15px);
+
 }
 
 .name-box input {
+
   flex: 1;
 
   min-width: 0;
@@ -309,27 +362,36 @@ body {
 
   padding: 0 20px;
 
-  background: transparent;
+  background: #071A33;
 
   color: #ffffff;
 
   font-size: 15px;
+
 }
 
 .name-box input::placeholder {
+
   color: #8da4c8;
+
 }
 
 .name-box button {
+
   width: 190px;
 
   border: none;
 
   background:
+
     linear-gradient(
+
       135deg,
+
       #facc15,
+
       #f59e0b
+
     );
 
   color: #111827;
@@ -343,23 +405,31 @@ body {
   cursor: pointer;
 
   transition:
+
     transform 0.2s ease,
+
     filter 0.2s ease;
+
 }
 
 .name-box button:hover {
+
   filter: brightness(1.08);
 
   transform: translateX(2px);
+
 }
 
 .name-box button span {
+
   margin-left: 12px;
 
   font-size: 18px;
+
 }
 
 .hero-error {
+
   width: fit-content;
 
   max-width: 600px;
@@ -367,28 +437,35 @@ body {
   margin-top: 12px;
 
   padding:
+
     10px 14px;
 
   border-radius: 8px;
 
   background:
+
     rgba(127, 29, 29, 0.35);
 
   border:
+
     1px solid
+
     rgba(248, 113, 113, 0.35);
 
   color: #fecaca;
 
   font-size: 13px;
+
 }
 
-
 /* =====================================================
+
    IMAGE AREA
+
 ===================================================== */
 
 .hero-image-area {
+
   position: relative;
 
   display: flex;
@@ -398,9 +475,11 @@ body {
   justify-content: center;
 
   min-height: 430px;
+
 }
 
 .image-glow {
+
   position: absolute;
 
   width: 430px;
@@ -410,14 +489,17 @@ body {
   border-radius: 50%;
 
   background:
+
     rgba(37, 99, 235, 0.42);
 
   filter: blur(75px);
 
   opacity: 0.75;
+
 }
 
 .hero-image-card {
+
   position: relative;
 
   width: 100%;
@@ -428,38 +510,46 @@ body {
 
   border-radius: 22px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(59, 130, 246, 0.50),
-      rgba(15, 23, 42, 0.65)
-    );
+  background: #071A33;
 
   border:
+
     1px solid
+
     rgba(147, 197, 253, 0.38);
 
   box-shadow:
+
     0 35px 80px
+
     rgba(0, 0, 0, 0.45),
 
     0 0 70px
+
     rgba(37, 99, 235, 0.25);
 
   transform:
+
     rotate(1deg);
 
   transition:
+
     transform 0.4s ease;
+
 }
 
 .hero-image-card:hover {
+
   transform:
+
     rotate(0deg)
+
     translateY(-6px);
+
 }
 
 .image-top-label {
+
   height: 34px;
 
   display: flex;
@@ -475,9 +565,11 @@ body {
   font-weight: 800;
 
   letter-spacing: 2px;
+
 }
 
 .ipl-team-image {
+
   display: block;
 
   width: 100%;
@@ -489,14 +581,19 @@ body {
   border-radius: 13px;
 
   border:
+
     1px solid
+
     rgba(255, 255, 255, 0.10);
+
 }
 
 .image-bottom {
+
   min-height: 72px;
 
   padding:
+
     10px 12px;
 
   display: flex;
@@ -504,29 +601,37 @@ body {
   align-items: center;
 
   justify-content: space-between;
+
 }
 
 .image-bottom div:first-child {
+
   display: flex;
 
   flex-direction: column;
 
   gap: 4px;
+
 }
 
 .image-bottom strong {
+
   color: #ffffff;
 
   font-size: 17px;
+
 }
 
 .image-bottom span {
+
   color: #8fa8ce;
 
   font-size: 12px;
+
 }
 
 .image-arrow {
+
   width: 40px;
 
   height: 40px;
@@ -540,27 +645,33 @@ body {
   border-radius: 50%;
 
   background:
+
     rgba(37, 99, 235, 0.35);
 
   color: #ffffff;
 
   font-size: 20px;
+
 }
 
-
 /* =====================================================
+
    DECORATIVE CIRCLES
+
 ===================================================== */
 
 .hero-circle {
+
   position: absolute;
 
   border-radius: 50%;
 
   pointer-events: none;
+
 }
 
 .hero-circle-one {
+
   width: 500px;
 
   height: 500px;
@@ -570,11 +681,15 @@ body {
   top: 20%;
 
   border:
+
     1px solid
+
     rgba(59, 130, 246, 0.08);
+
 }
 
 .hero-circle-two {
+
   width: 350px;
 
   height: 350px;
@@ -584,21 +699,27 @@ body {
   bottom: -120px;
 
   border:
+
     1px solid
+
     rgba(96, 165, 250, 0.07);
+
 }
 
-
 /* =====================================================
+
    FOOTER
+
 ===================================================== */
 
 .poll-footer {
+
   position: relative;
 
   width: 100%;
 
   padding:
+
     12px 20px 22px;
 
   text-align: center;
@@ -608,20 +729,25 @@ body {
   font-size: 11px;
 
   z-index: 5;
+
 }
 
-
 /* =====================================================
+
    QUESTION PAGE
+
 ===================================================== */
 
 .question-page {
+
   width: 100%;
 
   min-height:
+
     calc(100vh - 130px);
 
   padding:
+
     55px 20px;
 
   display: flex;
@@ -629,20 +755,25 @@ body {
   justify-content: center;
 
   align-items: flex-start;
+
 }
 
 .question-container {
+
   width: 100%;
 
   max-width: 900px;
+
 }
 
-
 /* =====================================================
+
    QUESTION TOP
+
 ===================================================== */
 
 .question-top {
+
   display: flex;
 
   align-items: flex-end;
@@ -652,9 +783,11 @@ body {
   gap: 30px;
 
   margin-bottom: 20px;
+
 }
 
 .question-label {
+
   margin-bottom: 10px;
 
   color: #60a5fa;
@@ -664,9 +797,11 @@ body {
   font-weight: 800;
 
   letter-spacing: 3px;
+
 }
 
 .question-top h1 {
+
   margin: 0;
 
   color: #ffffff;
@@ -674,9 +809,11 @@ body {
   font-size: 38px;
 
   line-height: 1.1;
+
 }
 
 .question-count {
+
   display: flex;
 
   align-items: baseline;
@@ -686,24 +823,31 @@ body {
   color: #7187aa;
 
   white-space: nowrap;
+
 }
 
 .question-count strong {
+
   color: #facc15;
 
   font-size: 36px;
+
 }
 
 .question-count span {
+
   font-size: 16px;
+
 }
 
-
 /* =====================================================
+
    PROGRESS
+
 ===================================================== */
 
 .progress-wrapper {
+
   display: flex;
 
   align-items: center;
@@ -711,9 +855,11 @@ body {
   gap: 14px;
 
   margin-bottom: 28px;
+
 }
 
 .progress-bar {
+
   flex: 1;
 
   height: 6px;
@@ -722,27 +868,36 @@ body {
 
   border-radius: 99px;
 
-  background:
-    rgba(71, 85, 105, 0.45);
+  background: #071A33;
+
 }
 
 .progress-fill {
+
   height: 100%;
 
   border-radius: inherit;
 
   background:
+
     linear-gradient(
+
       90deg,
+
       #2563eb,
+
       #60a5fa
+
     );
 
   transition:
+
     width 0.3s ease;
+
 }
 
 .progress-wrapper > span {
+
   width: 40px;
 
   color: #93c5fd;
@@ -750,37 +905,41 @@ body {
   font-size: 12px;
 
   text-align: right;
+
 }
 
-
 /* =====================================================
+
    QUESTION CARD
+
 ===================================================== */
 
 .question-card {
+
   padding: 38px;
 
   border:
+
     1px solid
+
     rgba(96, 165, 250, 0.20);
 
   border-radius: 20px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(15, 35, 72, 0.95),
-      rgba(7, 20, 46, 0.96)
-    );
+  background: #071A33;
 
   box-shadow:
+
     0 30px 70px
+
     rgba(0, 0, 0, 0.35);
 
   backdrop-filter: blur(18px);
+
 }
 
 .question-number {
+
   margin-bottom: 12px;
 
   color: #60a5fa;
@@ -790,9 +949,11 @@ body {
   font-weight: 800;
 
   letter-spacing: 2px;
+
 }
 
 .question-card h2 {
+
   margin: 0;
 
   color: #ffffff;
@@ -800,35 +961,45 @@ body {
   font-size: 28px;
 
   line-height: 1.3;
+
 }
 
 .question-help {
+
   margin:
+
     10px 0 26px;
 
   color: #8298ba;
 
   font-size: 13px;
+
 }
 
-
 /* =====================================================
+
    OPTIONS
+
 ===================================================== */
 
 .options-grid {
+
   display: grid;
 
   grid-template-columns:
+
     repeat(2, minmax(0, 1fr));
 
   gap: 12px;
+
 }
 
 .option-card {
+
   min-height: 62px;
 
   padding:
+
     12px 15px;
 
   display: flex;
@@ -838,13 +1009,14 @@ body {
   gap: 13px;
 
   border:
+
     1px solid
+
     rgba(96, 165, 250, 0.16);
 
   border-radius: 12px;
 
-  background:
-    rgba(15, 39, 77, 0.70);
+  background: #071A33;
 
   color: #dbeafe;
 
@@ -853,37 +1025,55 @@ body {
   cursor: pointer;
 
   transition:
+
     all 0.2s ease;
+
 }
 
 .option-card:hover {
+
   border-color:
+
     rgba(96, 165, 250, 0.50);
 
   background:
+
     rgba(30, 64, 115, 0.75);
 
   transform:
+
     translateY(-1px);
+
 }
 
 .option-card.selected {
+
   border-color:
+
     #3b82f6;
 
   background:
+
     linear-gradient(
+
       135deg,
+
       rgba(37, 99, 235, 0.30),
+
       rgba(29, 78, 216, 0.18)
+
     );
 
   box-shadow:
+
     0 8px 25px
+
     rgba(37, 99, 235, 0.14);
+
 }
 
 .option-check {
+
   flex: 0 0 auto;
 
   width: 24px;
@@ -897,7 +1087,9 @@ body {
   justify-content: center;
 
   border:
+
     1px solid
+
     #41618d;
 
   border-radius: 7px;
@@ -907,51 +1099,65 @@ body {
   font-size: 13px;
 
   font-weight: 800;
+
 }
 
 .option-check.checked {
+
   border-color: #3b82f6;
 
   background: #2563eb;
+
 }
 
 .option-text {
+
   font-size: 14px;
 
   line-height: 1.4;
+
 }
 
-
 /* =====================================================
+
    QUESTION ERROR
+
 ===================================================== */
 
 .question-error {
+
   margin-top: 18px;
 
   padding:
+
     12px 14px;
 
   border-radius: 9px;
 
   background:
+
     rgba(127, 29, 29, 0.30);
 
   border:
+
     1px solid
+
     rgba(248, 113, 113, 0.30);
 
   color: #fecaca;
 
   font-size: 13px;
+
 }
 
-
 /* =====================================================
+
    QUESTION ACTIONS
+
 ===================================================== */
 
 .question-actions {
+
   display: flex;
 
   align-items: center;
@@ -961,13 +1167,17 @@ body {
   gap: 15px;
 
   margin-top: 30px;
+
 }
 
 .back-button,
+
 .next-button {
+
   min-height: 48px;
 
   padding:
+
     0 22px;
 
   border-radius: 10px;
@@ -979,94 +1189,135 @@ body {
   cursor: pointer;
 
   transition:
+
     all 0.2s ease;
+
 }
 
 .back-button {
+
   border:
+
     1px solid
+
     #294674;
 
   background:
+
     transparent;
 
   color: #9db5d9;
+
 }
 
 .back-button:hover:not(:disabled) {
+
   background:
+
     rgba(37, 99, 235, 0.10);
 
   color: #ffffff;
+
 }
 
 .back-button:disabled {
+
   opacity: 0.35;
 
   cursor: not-allowed;
+
 }
 
 .next-button {
+
   border: none;
 
   background:
+
     linear-gradient(
+
       135deg,
+
       #2563eb,
+
       #1d4ed8
+
     );
 
   color: #ffffff;
 
   box-shadow:
+
     0 8px 20px
+
     rgba(37, 99, 235, 0.25);
+
 }
 
 .next-button:hover:not(:disabled) {
+
   background:
+
     linear-gradient(
+
       135deg,
+
       #3b82f6,
+
       #2563eb
+
     );
 
   transform:
+
     translateY(-1px);
 
   box-shadow:
+
     0 12px 28px
+
     rgba(37, 99, 235, 0.35);
+
 }
 
 .next-button span {
+
   margin-left: 12px;
 
   font-size: 17px;
+
 }
 
 .submit-button {
+
   min-width: 190px;
+
 }
 
 .next-button:disabled {
+
   opacity: 0.60;
 
   cursor: not-allowed;
 
   transform: none;
+
 }
 
-
 /* =====================================================
+
    THANK YOU PAGE
+
 ===================================================== */
 
 .thank-you-wrapper {
+
   min-height:
+
     calc(100vh - 145px);
 
   padding:
+
     50px 20px;
 
   display: flex;
@@ -1074,52 +1325,63 @@ body {
   align-items: center;
 
   justify-content: center;
+
 }
 
 .thank-you-card {
+
   width: 100%;
 
   max-width: 700px;
 
   padding:
+
     60px 45px;
 
   text-align: center;
 
   border:
+
     1px solid
+
     rgba(96, 165, 250, 0.28);
 
   border-radius: 24px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(21, 55, 111, 0.88),
-      rgba(7, 22, 50, 0.95)
-    );
+  background: #071A33;
 
   box-shadow:
+
     0 35px 90px
+
     rgba(0, 0, 0, 0.40),
 
     0 0 70px
+
     rgba(37, 99, 235, 0.20);
+
 }
 
 .thank-trophy {
+
   margin-bottom: 10px;
 
   font-size: 58px;
 
   filter:
+
     drop-shadow(
+
       0 8px 20px
+
       rgba(250, 204, 21, 0.30)
+
     );
+
 }
 
 .thank-small {
+
   margin-bottom: 16px;
 
   color: #facc15;
@@ -1129,9 +1391,11 @@ body {
   font-weight: 800;
 
   letter-spacing: 4px;
+
 }
 
 .thank-you-card h1 {
+
   margin: 0 0 15px;
 
   color: #ffffff;
@@ -1139,13 +1403,17 @@ body {
   font-size: 48px;
 
   line-height: 1.1;
+
 }
 
 .thank-you-card h1 span {
+
   color: #facc15;
+
 }
 
 .thank-you-card p {
+
   margin: 0 auto 25px;
 
   max-width: 520px;
@@ -1155,24 +1423,31 @@ body {
   font-size: 15px;
 
   line-height: 1.7;
+
 }
 
 .saved-message {
+
   width: fit-content;
 
   margin:
+
     0 auto 25px;
 
   padding:
+
     11px 18px;
 
   border-radius: 9px;
 
   background:
+
     rgba(37, 99, 235, 0.16);
 
   border:
+
     1px solid
+
     rgba(96, 165, 250, 0.30);
 
   color: #bfdbfe;
@@ -1180,12 +1455,15 @@ body {
   font-size: 13px;
 
   font-weight: 700;
+
 }
 
 .thank-home-button {
+
   min-height: 48px;
 
   padding:
+
     0 22px;
 
   border: none;
@@ -1193,10 +1471,15 @@ body {
   border-radius: 10px;
 
   background:
+
     linear-gradient(
+
       135deg,
+
       #2563eb,
+
       #1d4ed8
+
     );
 
   color: #ffffff;
@@ -1208,16 +1491,21 @@ body {
   cursor: pointer;
 
   box-shadow:
+
     0 8px 20px
+
     rgba(37, 99, 235, 0.25);
+
 }
 
-
 /* =====================================================
+
    LOADING
+
 ===================================================== */
 
 .poll-loading-page {
+
   width: 100%;
 
   min-height: 100vh;
@@ -1232,48 +1520,56 @@ body {
 
   gap: 20px;
 
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(37, 99, 235, 0.45),
-      transparent 35%
-    ),
-    #020817;
+  background: #071A33;
 
   color: #a8bbd8;
+
 }
 
 .poll-loading-spinner {
+
   width: 48px;
 
   height: 48px;
 
   border:
+
     4px solid
+
     rgba(96, 165, 250, 0.20);
 
   border-top-color:
+
     #3b82f6;
 
   border-radius: 50%;
 
   animation:
+
     pollSpin 0.8s
+
     linear infinite;
+
 }
 
 @keyframes pollSpin {
+
   to {
+
     transform: rotate(360deg);
+
   }
+
 }
 
-
 /* =====================================================
+
    POLL CLOSED
+
 ===================================================== */
 
 .poll-closed-card {
+
   width: 100%;
 
   max-width: 500px;
@@ -1283,218 +1579,309 @@ body {
   text-align: center;
 
   border:
+
     1px solid
+
     rgba(96, 165, 250, 0.20);
 
   border-radius: 20px;
 
-  background:
-    rgba(15, 35, 72, 0.90);
+  background: #071A33;
 
   box-shadow:
+
     0 30px 70px
+
     rgba(0, 0, 0, 0.40);
+
 }
 
 .closed-icon {
+
   font-size: 50px;
 
   margin-bottom: 15px;
+
 }
 
 .poll-closed-card h1 {
+
   margin: 0 0 10px;
 
   color: #ffffff;
+
 }
 
 .poll-closed-card p {
+
   margin: 0;
 
   color: #9db5d9;
 
   line-height: 1.6;
+
 }
 
-
 /* =====================================================
+
    RESPONSIVE
+
 ===================================================== */
 
 @media (max-width: 1050px) {
 
   .hero-content {
+
     grid-template-columns: 1fr;
 
     gap: 45px;
 
     max-width: 720px;
+
   }
 
   .hero-left {
+
     max-width: 720px;
 
     text-align: center;
 
     margin: 0 auto;
+
   }
 
   .hero-trophy {
+
     margin-left: auto;
+
     margin-right: auto;
+
   }
 
   .hero-description {
+
     margin-left: auto;
+
     margin-right: auto;
+
   }
 
   .name-box {
+
     margin-left: auto;
+
     margin-right: auto;
+
   }
 
   .hero-error {
+
     margin-left: auto;
+
     margin-right: auto;
+
   }
 
   .hero-image-area {
+
     min-height: auto;
+
   }
 
   .hero-image-card {
-    max-width: 650px;
-  }
-}
 
+    max-width: 650px;
+
+  }
+
+}
 
 @media (max-width: 700px) {
 
   .poll-header {
+
     height: 70px;
 
     padding:
+
       0 20px;
+
   }
 
   .brand-ipl,
+
   .brand-year {
+
     font-size: 16px;
+
   }
 
   .header-label {
+
     font-size: 9px;
 
     letter-spacing: 1.5px;
+
   }
 
   .hero-section {
+
     padding:
+
       40px 20px
+
       60px;
+
   }
 
   .hero-left h1 {
+
     font-size: 50px;
 
     letter-spacing: -2px;
+
   }
 
   .hero-description {
+
     font-size: 14px;
+
   }
 
   .name-box {
+
     height: auto;
 
     flex-direction: column;
+
   }
 
   .name-box input {
+
     height: 56px;
+
   }
 
   .name-box button {
+
     width: 100%;
 
     height: 54px;
+
   }
 
   .ipl-team-image {
+
     height: 230px;
+
   }
 
   .question-page {
+
     padding:
+
       35px 16px;
+
   }
 
   .question-top {
+
     align-items: flex-start;
+
   }
 
   .question-top h1 {
+
     font-size: 30px;
+
   }
 
   .question-count strong {
+
     font-size: 28px;
+
   }
 
   .question-card {
+
     padding: 24px 18px;
+
   }
 
   .question-card h2 {
+
     font-size: 23px;
+
   }
 
   .options-grid {
+
     grid-template-columns: 1fr;
+
   }
 
   .question-actions {
+
     flex-direction: column-reverse;
 
     align-items: stretch;
+
   }
 
   .back-button,
+
   .next-button {
+
     width: 100%;
+
   }
 
   .thank-you-card {
+
     padding:
+
       45px 22px;
+
   }
 
   .thank-you-card h1 {
-    font-size: 38px;
-  }
-}
 
+    font-size: 38px;
+
+  }
+
+}
 
 @media (max-width: 430px) {
 
   .hero-left h1 {
+
     font-size: 42px;
+
   }
 
   .hero-label {
+
     letter-spacing: 2px;
+
   }
 
   .hero-image-card {
+
     padding: 8px;
+
   }
 
   .ipl-team-image {
+
     height: 190px;
+
   }
 
   .thank-you-card h1 {
+
     font-size: 32px;
+
   }
+
 }

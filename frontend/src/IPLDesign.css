@@ -1,0 +1,1023 @@
+
+
+/* ==========================================
+
+   IPL 2029 — POLLSPACE DESIGN
+
+   \========================================== */
+
+
+
+.public-page,
+
+.question-page {
+
+  min-height: 100vh;
+
+  color: #f7f9ff;
+
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+
+  background: #071A33;
+
+  box-sizing: border-box;
+
+}
+
+
+
+.public-page *,
+
+.question-page * {
+
+  box-sizing: border-box;
+
+}
+
+
+
+.public-topbar,
+
+.question-header {
+
+  width: min(1180px, calc(100% - 48px));
+
+  margin: 0 auto;
+
+  min-height: 82px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border-bottom: 1px solid rgba(151, 184, 255, 0.15);
+
+}
+
+
+
+.brand,
+
+.question-brand {
+
+  color: #f5f8ff;
+
+  font-size: 20px;
+
+  font-weight: 900;
+
+  letter-spacing: 2px;
+
+}
+
+
+
+.brand span,
+
+.question-brand span {
+
+  color: #ffd21f;
+
+}
+
+
+
+.poll-label,
+
+.question-header .question-count {
+
+  color: #a8c6ff;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+
+}
+
+
+
+.public-card {
+
+  width: min(760px, calc(100% - 32px));
+
+  margin: 58px auto 42px;
+
+  padding: 0;
+
+}
+
+
+
+.start-card,
+
+.thank-you-card {
+
+  width: 100%;
+
+  padding: 46px 48px;
+
+  border: 1px solid rgba(119, 164, 255, 0.48);
+
+  border-radius: 24px;
+
+  background: #071A33;
+
+  box-shadow:
+
+    0 24px 70px rgba(0, 0, 0, 0.3),
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+
+  text-align: center;
+
+}
+
+
+
+.trophy {
+
+  margin-bottom: 10px;
+
+  font-size: 42px;
+
+  filter: drop-shadow(0 6px 18px rgba(255, 198, 0, 0.22));
+
+}
+
+
+
+.small-title {
+
+  margin-bottom: 16px;
+
+  color: #a9c6ff;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 5px;
+
+}
+
+
+
+.start-card h1,
+
+.thank-you-card h1 {
+
+  margin: 0 auto 20px;
+
+  color: #f7f9ff;
+
+  font-size: clamp(34px, 5vw, 54px);
+
+  font-weight: 850;
+
+  line-height: 1.12;
+
+  letter-spacing: -1.5px;
+
+}
+
+
+
+.start-card h1 span,
+
+.thank-you-card h1 span {
+
+  color: #ffd21f;
+
+}
+
+
+
+.start-card > p,
+
+.thank-you-text {
+
+  max-width: 510px;
+
+  margin: 0 auto 28px;
+
+  color: #c0cde9;
+
+  font-size: 15px;
+
+  line-height: 1.8;
+
+}
+
+
+
+.name-section {
+
+  display: flex;
+
+  width: 100%;
+
+  gap: 0;
+
+  margin-top: 30px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(160, 190, 255, 0.6);
+
+  border-radius: 12px;
+
+  background: #071A33;
+
+}
+
+
+
+.name-section input {
+
+  flex: 1;
+
+  width: 100%;
+
+  min-width: 0;
+
+  padding: 17px 18px;
+
+  color: #ffffff;
+
+  border: 0;
+
+  outline: none;
+
+  background: #071A33;
+
+  font-size: 15px;
+
+}
+
+
+
+.name-section input::placeholder {
+
+  color: #9eafd3;
+
+}
+
+
+
+.name-section input:focus {
+
+  box-shadow: inset 0 0 0 1px #3c91ff;
+
+}
+
+
+
+.name-section button {
+
+  flex-shrink: 0;
+
+  padding: 0 24px;
+
+  border: 0;
+
+  background: #071A33;
+
+  color: #152044;
+
+  font-size: 12px;
+
+  font-weight: 900;
+
+  letter-spacing: 1px;
+
+  cursor: pointer;
+
+  transition: filter 0.2s ease, transform 0.2s ease;
+
+}
+
+
+
+.name-section button:hover {
+
+  filter: brightness(1.08);
+
+}
+
+
+
+.name-section button:active {
+
+  transform: scale(0.98);
+
+}
+
+
+
+.generic-back-link {
+
+  margin-top: 22px;
+
+  color: #a9c6ff;
+
+  font-size: 13px;
+
+}
+
+
+
+.generic-back-link a {
+
+  color: #a9c6ff;
+
+  text-decoration: none;
+
+}
+
+
+
+.generic-back-link a:hover {
+
+  color: #ffffff;
+
+  text-decoration: underline;
+
+}
+
+
+
+.public-error,
+
+.submit-error {
+
+  margin-top: 18px;
+
+  padding: 13px 15px;
+
+  border: 1px solid rgba(255, 110, 110, 0.45);
+
+  border-radius: 10px;
+
+  background: #071A33;
+
+  color: #ffb6bd;
+
+  font-size: 13px;
+
+  text-align: left;
+
+}
+
+
+
+.public-footer {
+
+  padding: 18px 20px 26px;
+
+  color: #8ea7d7;
+
+  font-size: 12px;
+
+  text-align: center;
+
+}
+
+
+
+/* ==========================================
+
+   IPL QUESTIONS
+
+   \========================================== */
+
+
+
+.question-header {
+
+  align-items: center;
+
+  padding: 24px 0;
+
+}
+
+
+
+.question-header h1 {
+
+  margin: 8px 0;
+
+  color: #f7f9ff;
+
+  font-size: clamp(25px, 3vw, 36px);
+
+}
+
+
+
+.question-header p {
+
+  margin: 0;
+
+  color: #bdcbea;
+
+  font-size: 14px;
+
+  line-height: 1.7;
+
+}
+
+
+
+.question-header p strong {
+
+  color: #ffffff;
+
+}
+
+
+
+.question-header .question-count {
+
+  padding: 11px 15px;
+
+  border: 1px solid rgba(130, 172, 255, 0.35);
+
+  border-radius: 30px;
+
+  white-space: nowrap;
+
+}
+
+
+
+.questions-container {
+
+  width: min(900px, calc(100% - 32px));
+
+  margin: 32px auto 60px;
+
+}
+
+
+
+.questions-container form {
+
+  display: grid;
+
+  gap: 22px;
+
+}
+
+
+
+.question-card {
+
+  padding: 28px;
+
+  border: 1px solid rgba(119, 164, 255, 0.32);
+
+  border-radius: 18px;
+
+  background: #071A33;
+
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.16);
+
+}
+
+
+
+.question-number {
+
+  margin-bottom: 12px;
+
+  color: #86b7ff;
+
+  font-size: 11px;
+
+  font-weight: 850;
+
+  letter-spacing: 2px;
+
+}
+
+
+
+.question-card h2 {
+
+  margin: 0;
+
+  color: #f6f8ff;
+
+  font-size: clamp(19px, 2.5vw, 25px);
+
+  line-height: 1.45;
+
+}
+
+
+
+.multiple-hint {
+
+  margin: 10px 0 20px;
+
+  color: #9fb1d4;
+
+  font-size: 13px;
+
+}
+
+
+
+.options-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+
+}
+
+
+
+.option-card {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  min-height: 58px;
+
+  padding: 15px 16px;
+
+  border: 1px solid rgba(147, 174, 225, 0.25);
+
+  border-radius: 12px;
+
+  background: #071A33;
+
+  cursor: pointer;
+
+  transition:
+
+    border-color 0.2s ease,
+
+    background 0.2s ease,
+
+    transform 0.2s ease;
+
+}
+
+
+
+.option-card:hover {
+
+  border-color: rgba(107, 167, 255, 0.85);
+
+  background: #071A33;
+
+  transform: translateY(-1px);
+
+}
+
+
+
+.option-card.selected {
+
+  border-color: #419aff;
+
+  background: #071A33;
+
+  box-shadow: inset 0 0 0 1px rgba(65, 154, 255, 0.16);
+
+}
+
+
+
+.option-card input {
+
+  position: absolute;
+
+  width: 1px;
+
+  height: 1px;
+
+  opacity: 0;
+
+}
+
+
+
+.custom-checkbox {
+
+  display: inline-flex;
+
+  flex: 0 0 21px;
+
+  width: 21px;
+
+  height: 21px;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 1px solid #7188b5;
+
+  border-radius: 6px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+}
+
+
+
+.option-card.selected .custom-checkbox {
+
+  border-color: #328eff;
+
+  background: #071A33;
+
+}
+
+
+
+.option-text {
+
+  color: #e7edff;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+
+}
+
+
+
+.submit-poll-button {
+
+  width: 100%;
+
+  min-height: 58px;
+
+  margin-top: 4px;
+
+  padding: 16px 22px;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  background: #071A33;
+
+  box-shadow: 0 10px 28px rgba(0, 126, 255, 0.2);
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+  letter-spacing: 1.2px;
+
+  cursor: pointer;
+
+  transition: filter 0.2s ease, transform 0.2s ease;
+
+}
+
+
+
+.submit-poll-button:hover:not(:disabled) {
+
+  filter: brightness(1.1);
+
+  transform: translateY(-2px);
+
+}
+
+
+
+.submit-poll-button:disabled {
+
+  cursor: wait;
+
+  opacity: 0.65;
+
+}
+
+
+
+/* ==========================================
+
+   THANK-YOU SCREEN
+
+   \========================================== */
+
+
+
+.thank-you-card {
+
+  padding-top: 48px;
+
+  padding-bottom: 48px;
+
+}
+
+
+
+.success-box {
+
+  margin: 24px 0;
+
+  padding: 14px;
+
+  border: 1px solid rgba(75, 222, 164, 0.35);
+
+  border-radius: 10px;
+
+  background: #071A33;
+
+  color: #83f0c3;
+
+  font-size: 14px;
+
+}
+
+
+
+.generic-primary-button {
+
+  display: inline-flex;
+
+  min-height: 48px;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 13px 22px;
+
+  border: 0;
+
+  border-radius: 10px;
+
+  background: #071A33;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition: filter 0.2s ease;
+
+}
+
+
+
+.generic-primary-button:hover {
+
+  filter: brightness(1.1);
+
+}
+
+
+
+/* ==========================================
+
+   LOADING / ERROR
+
+   \========================================== */
+
+
+
+.generic-poll-message {
+
+  width: min(520px, calc(100% - 32px));
+
+  margin: 15vh auto;
+
+  padding: 32px;
+
+  border: 1px solid rgba(119, 164, 255, 0.4);
+
+  border-radius: 18px;
+
+  background: #071A33;
+
+  color: #eaf0ff;
+
+  text-align: center;
+
+}
+
+
+
+/* ==========================================
+
+   RESPONSIVE LAYOUT
+
+   \========================================== */
+
+
+
+@media (max-width: 640px) {
+
+  .public-topbar,
+
+  .question-header {
+
+    width: calc(100% - 32px);
+
+    min-height: 68px;
+
+  }
+
+
+
+  .brand,
+
+  .question-brand {
+
+    font-size: 17px;
+
+  }
+
+
+
+  .poll-label {
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+  }
+
+
+
+  .public-card {
+
+    margin-top: 30px;
+
+  }
+
+
+
+  .start-card,
+
+  .thank-you-card {
+
+    padding: 32px 22px;
+
+    border-radius: 18px;
+
+  }
+
+
+
+  .start-card h1,
+
+  .thank-you-card h1 {
+
+    font-size: 36px;
+
+  }
+
+
+
+  .start-card > p,
+
+  .thank-you-text {
+
+    font-size: 14px;
+
+  }
+
+
+
+  .name-section {
+
+    flex-direction: column;
+
+    border: 0;
+
+    background: #071A33;
+
+    gap: 12px;
+
+    overflow: visible;
+
+  }
+
+
+
+  .name-section input {
+
+    min-height: 52px;
+
+    border: 1px solid rgba(160, 190, 255, 0.6);
+
+    border-radius: 10px;
+
+    background: #071A33;
+
+  }
+
+
+
+  .name-section button {
+
+    min-height: 52px;
+
+    border-radius: 10px;
+
+  }
+
+
+
+  .question-header {
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    padding: 22px 0;
+
+  }
+
+
+
+  .question-header .question-count {
+
+    font-size: 10px;
+
+  }
+
+
+
+  .questions-container {
+
+    margin-top: 22px;
+
+  }
+
+
+
+  .question-card {
+
+    padding: 21px 17px;
+
+  }
+
+
+
+  .options-grid {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+
+  .option-card {
+
+    min-height: 54px;
+
+  }
+
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .option-card,
+
+  .name-section button,
+
+  .submit-poll-button {
+
+    transition: none;
+
+  }
+
+}

@@ -1,9363 +1,1759 @@
-import { useEffect, useState } from "react";
-
-
-
-
-
-
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import "./AdminDashboard.css";
 
+const API_BASE = (
 
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8081"
 
+).replace(/\/$/, "");
 
+async function readResponse(response) {
 
+  const text = await response.text();
 
-
-
-
-
-
-
-
-
-
-function AdminDashboard({ username, onLogout }) {
-
-
-
-
-
-
-
-  const navigate = useNavigate();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const [participants, setParticipants] = useState([]);
-
-
-
-
-
-
-
-  const [loading, setLoading] = useState(true);
-
-
-
-
-
-
-
-  const [selectedParticipant, setSelectedParticipant] =
-
-
-
-
-
-
-
-    useState(null);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const [searchTerm, setSearchTerm] = useState("");
-
-
-
-
-
-
-
-  const [dateFilter, setDateFilter] = useState("");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const [pollStatus, setPollStatus] = useState(null);
-
-
-
-
-
-
-
-  const [togglingPoll, setTogglingPoll] = useState(false);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const [deletingId, setDeletingId] = useState(null);
-
-
-
-
-
-
-
-  const [error, setError] = useState("");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  // CSRF TOKEN
-// ==========================================
-
-// IMPORTANT:
-// In production the React frontend and Django backend use different origins.
-// Do NOT read Django's csrftoken from document.cookie.
-// Django returns the CSRF token directly from the authenticated /api/admin/me/ endpoint.
-const fetchCsrfToken = async () => {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/admin/me/`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      console.error(
-        "Unable to get CSRF token. Admin session status:",
-        response.status
-      );
-      return null;
-    }
-
-    const data = await response.json();
-
-    if (data?.csrfToken) {
-      return data.csrfToken;
-    }
-
-    console.error("Admin session response did not contain csrfToken.");
-    return null;
-  } catch (error) {
-    console.error("CSRF token request error:", error);
-    return null;
-  }
-};
-
-// ==========================================
-// FETCH PARTICIPANTS
-// ==========================================
-
-
-  // ==========================================
-
-
-
-  const fetchParticipants = async () => {
-
-
-
-
-
-
-
-    try {
-
-
-
-
-
-
-
-      setLoading(true);
-
-
-
-
-
-
-
-      setError("");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      const response = await fetch(
-
-
-
-
-
-
-
-        `${import.meta.env.VITE_API_URL}/api/admin/participants/`,
-
-
-
-
-
-
-
-        {
-
-
-
-
-
-
-
-          method: "GET",
-
-
-
-
-
-
-
-          credentials: "include",
-
-
-
-
-
-
-
-        }
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      if (!response.ok) {
-
-
-
-
-
-
-
-        if (response.status === 403) {
-
-
-
-
-
-
-
-          setError(
-
-
-
-
-
-
-
-            "Session expired. Please login again."
-
-
-
-
-
-
-
-          );
-
-
-
-
-
-
-
-          return;
-
-
-
-
-
-
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        throw new Error(
-
-
-
-
-
-
-
-          "Failed to fetch participants."
-
-
-
-
-
-
-
-        );
-
-
-
-
-
-
-
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      const data = await response.json();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      setParticipants(data);
-
-
-
-
-
-
-
-    } catch (error) {
-
-
-
-
-
-
-
-      console.error(
-
-
-
-
-
-
-
-        "Participants fetch error:",
-
-
-
-
-
-
-
-        error
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      setError(
-
-
-
-
-
-
-
-        "Unable to load participants."
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-    } finally {
-
-
-
-
-
-
-
-      setLoading(false);
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  // FETCH POLL STATUS
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const fetchPollStatus = async () => {
-
-
-
-
-
-
-
-    try {
-
-
-
-
-
-
-
-      const response = await fetch(
-
-
-
-
-
-
-
-        `${import.meta.env.VITE_API_URL}/api/admin/poll/status/`,
-
-
-
-
-
-
-
-        {
-
-
-
-
-
-
-
-          method: "GET",
-
-
-
-
-
-
-
-          credentials: "include",
-
-
-
-
-
-
-
-        }
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      if (!response.ok) {
-
-
-
-
-
-
-
-        throw new Error(
-
-
-
-
-
-
-
-          "Failed to fetch poll status."
-
-
-
-
-
-
-
-        );
-
-
-
-
-
-
-
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      const data = await response.json();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      setPollStatus(data);
-
-
-
-
-
-
-
-    } catch (error) {
-
-
-
-
-
-
-
-      console.error(
-
-
-
-
-
-
-
-        "Poll status error:",
-
-
-
-
-
-
-
-        error
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  // INITIAL LOAD
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  useEffect(() => {
-
-
-
-
-
-
-
-    fetchParticipants();
-
-
-
-
-
-
-
-    fetchPollStatus();
-
-
-
-
-
-
-
-  }, []);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  // REFRESH
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const handleRefresh = () => {
-
-
-
-
-
-
-
-    fetchParticipants();
-
-
-
-
-
-
-
-    fetchPollStatus();
-
-
-
-
-
-
-
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  // TOGGLE POLL
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const handleTogglePoll = async () => {
-
-
-
-
-
-
-
-    if (togglingPoll) {
-
-
-
-
-
-
-
-      return;
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const csrfToken = await fetchCsrfToken();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if (!csrfToken) {
-
-
-
-
-
-
-
-      setError(
-
-
-
-
-
-
-
-        "CSRF token not found. Please refresh the page."
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-      return;
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    try {
-
-
-
-
-
-
-
-      setTogglingPoll(true);
-
-
-
-
-
-
-
-      setError("");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      const response = await fetch(
-
-
-
-
-
-
-
-        `${import.meta.env.VITE_API_URL}/api/admin/poll/toggle/`,
-
-
-
-
-
-
-
-        {
-
-
-
-
-
-
-
-          method: "POST",
-
-
-
-
-
-
-
-          credentials: "include",
-
-
-
-
-
-
-
-          headers: {
-
-
-
-
-
-
-
-            "Content-Type": "application/json",
-
-
-
-
-
-
-
-            "X-CSRFToken": csrfToken,
-
-
-
-
-
-
-
-          },
-
-
-
-
-
-
-
-        }
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      const data = await response.json();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      if (!response.ok) {
-
-
-
-
-
-
-
-        throw new Error(
-
-
-
-
-
-
-
-          data.message ||
-
-
-
-
-
-
-
-            "Unable to change poll status."
-
-
-
-
-
-
-
-        );
-
-
-
-
-
-
-
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      setPollStatus((current) => ({
-
-
-
-
-
-
-
-        ...current,
-
-
-
-
-
-
-
-        is_active: data.is_active,
-
-
-
-
-
-
-
-      }));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      alert(
-
-
-
-
-
-
-
-        data.message ||
-
-
-
-
-
-
-
-          "Poll status updated successfully."
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-    } catch (error) {
-
-
-
-
-
-
-
-      console.error(
-
-
-
-
-
-
-
-        "Toggle poll error:",
-
-
-
-
-
-
-
-        error
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      setError(
-
-
-
-
-
-
-
-        error.message ||
-
-
-
-
-
-
-
-          "Unable to change poll status."
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-    } finally {
-
-
-
-
-
-
-
-      setTogglingPoll(false);
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-// DELETE PARTICIPANT
-
-
-
-// ==========================================
-
-
-
-
-
-
-
-const handleDeleteParticipant = async (participant) => {
-
-
-
-  const confirmDelete = window.confirm(
-
-
-
-    `Are you sure you want to delete ${participant.name}?`
-
-
-
-  );
-
-
-
-
-
-
-
-  if (!confirmDelete) {
-
-
-
-    return;
-
-
-
-  }
-
-
-
-
-
-
+  if (!text) return {};
 
   try {
 
+    return JSON.parse(text);
 
+  } catch {
 
-    setDeletingId(participant.id);
-
-
-
-    setError("");
-
-    const csrfToken = await fetchCsrfToken();
-
-    if (!csrfToken) {
-      setError(
-        "Unable to get the CSRF token from the admin session. Please login again."
-      );
-
-
-
-      return;
-
-
-
-    }
-
-
-
-
-
-
-
-    const response = await fetch(
-
-
-
-      `${import.meta.env.VITE_API_URL}/api/admin/participants/${participant.id}/`,
-
-
-
-      {
-
-
-
-        method: "DELETE",
-
-
-
-        credentials: "include",
-
-
-
-        headers: {
-
-
-
-          "X-CSRFToken": csrfToken,
-
-
-
-          Accept: "application/json",
-
-
-
-        },
-
-
-
-      }
-
-
-
-    );
-
-
-
-
-
-
-
-    let data = {};
-
-
-
-
-
-
-
-    try {
-
-
-
-      data = await response.json();
-
-
-
-    } catch {
-
-
-
-      data = {};
-
-
-
-    }
-
-
-
-
-
-
-
-    if (!response.ok) {
-
-
-
-      if (response.status === 403) {
-
-
-
-        throw new Error(
-
-
-
-          data.detail ||
-
-
-
-            data.message ||
-
-
-
-            "Delete not allowed. Your admin session or CSRF token may have expired. Please login again."
-
-
-
-        );
-
-
-
-      }
-
-
-
-
-
-
-
-      if (response.status === 404) {
-
-
-
-        throw new Error(
-
-
-
-          data.message || "Participant not found."
-
-
-
-        );
-
-
-
-      }
-
-
-
-
-
-
-
-      throw new Error(
-
-
-
-        data.message ||
-
-
-
-          data.detail ||
-
-
-
-          "Failed to delete participant."
-
-
-
-      );
-
-
-
-    }
-
-
-
-
-
-
-
-    // Remove deleted participant immediately from the dashboard
-
-
-
-    setParticipants((current) =>
-
-
-
-      current.filter(
-
-
-
-        (item) => Number(item.id) !== Number(participant.id)
-
-
-
-      )
-
-
-
-    );
-
-
-
-
-
-
-
-    // Close answers modal if this participant was selected
-
-
-
-    if (
-
-
-
-      selectedParticipant &&
-
-
-
-      Number(selectedParticipant.id) === Number(participant.id)
-
-
-
-    ) {
-
-
-
-      setSelectedParticipant(null);
-
-
-
-    }
-
-
-
-
-
-
-
-    alert(
-
-
-
-      data.message ||
-
-
-
-        `Participant "${participant.name}" deleted successfully.`
-
-
-
-    );
-
-
-
-  } catch (error) {
-
-
-
-    console.error("Delete participant error:", error);
-
-
-
-
-
-
-
-    setError(
-
-
-
-      error.message ||
-
-
-
-        "Unable to delete participant."
-
-
-
-    );
-
-
-
-  } finally {
-
-
-
-    setDeletingId(null);
-
-
+    return { detail: text };
 
   }
-
-
-
-};
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  // DATE FORMAT
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const formatDate = (dateString) => {
-
-
-
-
-
-
-
-    if (!dateString) {
-
-
-
-
-
-
-
-      return "N/A";
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const date = new Date(dateString);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return date.toLocaleDateString(
-
-
-
-
-
-
-
-      "en-IN",
-
-
-
-
-
-
-
-      {
-
-
-
-
-
-
-
-        day: "2-digit",
-
-
-
-
-
-
-
-        month: "short",
-
-
-
-
-
-
-
-        year: "numeric",
-
-
-
-
-
-
-
-      }
-
-
-
-
-
-
-
-    );
-
-
-
-
-
-
-
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const formatDateTime = (dateString) => {
-
-
-
-
-
-
-
-    if (!dateString) {
-
-
-
-
-
-
-
-      return "N/A";
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const date = new Date(dateString);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return date.toLocaleString(
-
-
-
-
-
-
-
-      "en-IN",
-
-
-
-
-
-
-
-      {
-
-
-
-
-
-
-
-        day: "2-digit",
-
-
-
-
-
-
-
-        month: "short",
-
-
-
-
-
-
-
-        year: "numeric",
-
-
-
-
-
-
-
-        hour: "2-digit",
-
-
-
-
-
-
-
-        minute: "2-digit",
-
-
-
-
-
-
-
-      }
-
-
-
-
-
-
-
-    );
-
-
-
-
-
-
-
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  // SEARCH + DATE FILTER
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const filteredParticipants =
-
-
-
-
-
-
-
-    participants.filter((participant) => {
-
-
-
-
-
-
-
-      const matchesSearch =
-
-
-
-
-
-
-
-        participant.name
-
-
-
-
-
-
-
-          .toLowerCase()
-
-
-
-
-
-
-
-          .includes(
-
-
-
-
-
-
-
-            searchTerm.toLowerCase()
-
-
-
-
-
-
-
-          );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      let matchesDate = true;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      if (dateFilter) {
-
-
-
-
-
-
-
-        const participantDate =
-
-
-
-
-
-
-
-          new Date(
-
-
-
-
-
-
-
-            participant.submitted_at
-
-
-
-
-
-
-
-          );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        const year =
-
-
-
-
-
-
-
-          participantDate.getFullYear();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        const month = String(
-
-
-
-
-
-
-
-          participantDate.getMonth() + 1
-
-
-
-
-
-
-
-        ).padStart(2, "0");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        const day = String(
-
-
-
-
-
-
-
-          participantDate.getDate()
-
-
-
-
-
-
-
-        ).padStart(2, "0");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        const participantDateString =
-
-
-
-
-
-
-
-          `${year}-${month}-${day}`;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        matchesDate =
-
-
-
-
-
-
-
-          participantDateString ===
-
-
-
-
-
-
-
-          dateFilter;
-
-
-
-
-
-
-
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      return (
-
-
-
-
-
-
-
-        matchesSearch &&
-
-
-
-
-
-
-
-        matchesDate
-
-
-
-
-
-
-
-      );
-
-
-
-
-
-
-
-    });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  // CLEAR FILTERS
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const clearFilters = () => {
-
-
-
-
-
-
-
-    setSearchTerm("");
-
-
-
-
-
-
-
-    setDateFilter("");
-
-
-
-
-
-
-
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-// EXPORT PARTICIPANTS TO CSV
-
-
-
-
-
-
-
-// ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const exportParticipantsToCSV = () => {
-
-
-
-
-
-
-
-  if (filteredParticipants.length === 0) {
-
-
-
-
-
-
-
-    alert("No participants available to export.");
-
-
-
-
-
-
-
-    return;
-
-
-
-
-
-
-
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const headers = [
-
-
-
-
-
-
-
-    "Participant ID",
-
-
-
-
-
-
-
-    "Name",
-
-
-
-
-
-
-
-    "Submitted Time",
-
-
-
-
-
-
-
-    "Question",
-
-
-
-
-
-
-
-    "Answer",
-
-
-
-
-
-
-
-  ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const rows = [];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  filteredParticipants.forEach((participant) => {
-
-
-
-
-
-
-
-    if (
-
-
-
-
-
-
-
-      !participant.responses ||
-
-
-
-
-
-
-
-      participant.responses.length === 0
-
-
-
-
-
-
-
-    ) {
-
-
-
-
-
-
-
-      rows.push([
-
-
-
-
-
-
-
-        participant.id,
-
-
-
-
-
-
-
-        participant.name,
-
-
-
-
-
-
-
-        formatDateTime(participant.submitted_at),
-
-
-
-
-
-
-
-        "",
-
-
-
-
-
-
-
-        "",
-
-
-
-
-
-
-
-      ]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      return;
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    participant.responses.forEach((response) => {
-
-
-
-
-
-
-
-      rows.push([
-
-
-
-
-
-
-
-        participant.id,
-
-
-
-
-
-
-
-        participant.name,
-
-
-
-
-
-
-
-        formatDateTime(participant.submitted_at),
-
-
-
-
-
-
-
-        response.question || "",
-
-
-
-
-
-
-
-        response.option || "",
-
-
-
-
-
-
-
-      ]);
-
-
-
-
-
-
-
-    });
-
-
-
-
-
-
-
-  });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const escapeCSV = (value) => {
-
-
-
-
-
-
-
-    const text = String(value ?? "");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return `"${text.replace(/"/g, '""')}"`;
-
-
-
-
-
-
-
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const csvContent = [
-
-
-
-
-
-
-
-    headers.map(escapeCSV).join(","),
-
-
-
-
-
-
-
-    ...rows.map((row) =>
-
-
-
-
-
-
-
-      row.map(escapeCSV).join(",")
-
-
-
-
-
-
-
-    ),
-
-
-
-
-
-
-
-  ].join("\n");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const blob = new Blob(
-
-
-
-
-
-
-
-    ["\uFEFF" + csvContent],
-
-
-
-
-
-
-
-    {
-
-
-
-
-
-
-
-      type: "text/csv;charset=utf-8;",
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-  );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const url = URL.createObjectURL(blob);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const link = document.createElement("a");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  link.href = url;
-
-
-
-
-
-
-
-  link.download = `IPL_2029_Participants_${new Date()
-
-
-
-
-
-
-
-    .toISOString()
-
-
-
-
-
-
-
-    .slice(0, 10)}.csv`;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  document.body.appendChild(link);
-
-
-
-
-
-
-
-  link.click();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  document.body.removeChild(link);
-
-
-
-
-
-
-
-  URL.revokeObjectURL(url);
-
-
-
-
-
-
-
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-  // LOGOUT
-
-
-
-
-
-
-
-  // ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const handleLogout = () => {
-
-
-
-
-
-
-
-    onLogout();
-
-
-
-
-
-
-
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  return (
-
-
-
-
-
-
-
-    <div className="admin-layout">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {/* =====================================
-
-
-
-
-
-
-
-          SIDEBAR
-
-
-
-
-
-
-
-      ====================================== */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <aside className="admin-sidebar">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <div className="sidebar-brand">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="sidebar-logo">
-
-
-
-
-
-
-
-            🏏
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div>
-
-
-
-
-
-
-
-            <h2>IPL 2029</h2>
-
-
-
-
-
-
-
-            <p>Admin Panel</p>
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <nav className="sidebar-nav">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <button
-
-
-
-
-
-
-
-            className="nav-item active"
-
-
-
-
-
-
-
-            onClick={() =>
-
-
-
-
-
-
-
-              navigate("/admin/dashboard")
-
-
-
-
-
-
-
-            }
-
-
-
-
-
-
-
-          >
-
-
-
-
-
-
-
-            <span className="nav-icon">
-
-
-
-
-
-
-
-              📊
-
-
-
-
-
-
-
-            </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            Dashboard
-
-
-
-
-
-
-
-          </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <button
-
-
-
-
-
-
-
-            className="nav-item"
-
-
-
-
-
-
-
-            onClick={() =>
-
-
-
-
-
-
-
-              navigate("/admin/analytics")
-
-
-
-
-
-
-
-            }
-
-
-
-
-
-
-
-          >
-
-
-
-
-
-
-
-            <span className="nav-icon">
-
-
-
-
-
-
-
-              📈
-
-
-
-
-
-
-
-            </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            Analytics
-
-
-
-
-
-
-
-          </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </nav>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <div className="sidebar-bottom">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="admin-user">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="user-avatar">
-
-
-
-
-
-
-
-              {username
-
-
-
-
-
-
-
-                ? username
-
-
-
-
-
-
-
-                    .charAt(0)
-
-
-
-
-
-
-
-                    .toUpperCase()
-
-
-
-
-
-
-
-                : "A"}
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="user-details">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <strong>
-
-
-
-
-
-
-
-                {username}
-
-
-
-
-
-
-
-              </strong>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <span>
-
-
-
-
-
-
-
-                Administrator
-
-
-
-
-
-
-
-              </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <button
-
-
-
-
-
-
-
-            className="logout-button"
-
-
-
-
-
-
-
-            onClick={handleLogout}
-
-
-
-
-
-
-
-          >
-
-
-
-
-
-
-
-            🚪 Logout
-
-
-
-
-
-
-
-          </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </aside>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {/* =====================================
-
-
-
-
-
-
-
-          MAIN
-
-
-
-
-
-
-
-      ====================================== */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <main className="admin-main">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {/* HEADER */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <header className="dashboard-header">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <p className="eyebrow">
-
-
-
-
-
-
-
-              IPL 2029
-
-
-
-
-
-
-
-            </p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <h1>
-
-
-
-
-
-
-
-              Dashboard
-
-
-
-
-
-
-
-            </h1>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <p className="header-description">
-
-
-
-
-
-
-
-              Manage your IPL 2029 prediction
-
-
-
-
-
-
-
-              poll
-
-
-
-
-
-
-
-            </p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="header-user">
-
-
-
-
-
-
-
-            Logged in as{" "}
-
-
-
-
-
-
-
-            <strong>
-
-
-
-
-
-
-
-              {username}
-
-
-
-
-
-
-
-            </strong>
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </header>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {/* ERROR */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {error && (
-
-
-
-
-
-
-
-          <div className="dashboard-error">
-
-
-
-
-
-
-
-            {error}
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-        )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {/* =====================================
-
-
-
-
-
-
-
-            STATS
-
-
-
-
-
-
-
-        ====================================== */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <section className="stats-grid">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="stat-card">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="stat-icon blue">
-
-
-
-
-
-
-
-              👥
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="stat-content">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <span>
-
-
-
-
-
-
-
-                Total Participants
-
-
-
-
-
-
-
-              </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <strong>
-
-
-
-
-
-
-
-                {participants.length}
-
-
-
-
-
-
-
-              </strong>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="stat-card">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="stat-icon green">
-
-
-
-
-
-
-
-              ✓
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="stat-content">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <span>
-
-
-
-
-
-
-
-                Poll Status
-
-
-
-
-
-
-
-              </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <strong
-
-
-
-
-
-
-
-                className={
-
-
-
-
-
-
-
-                  pollStatus?.is_active
-
-
-
-
-
-
-
-                    ? "status-active"
-
-
-
-
-
-
-
-                    : "status-closed"
-
-
-
-
-
-
-
-                }
-
-
-
-
-
-
-
-              >
-
-
-
-
-
-
-
-                {pollStatus?.is_active
-
-
-
-
-
-
-
-                  ? "Active"
-
-
-
-
-
-
-
-                  : "Closed"}
-
-
-
-
-
-
-
-              </strong>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="stat-card">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="stat-icon red">
-
-
-
-
-
-
-
-              ?
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="stat-content">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <span>
-
-
-
-
-
-
-
-                Total Questions
-
-
-
-
-
-
-
-              </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <strong>
-
-
-
-
-
-
-
-                5
-
-
-
-
-
-
-
-              </strong>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {/* =====================================
-
-
-
-
-
-
-
-            POLL CONTROL
-
-
-
-
-
-
-
-        ====================================== */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <section className="poll-control-card">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="poll-control-left">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div
-
-
-
-
-
-
-
-              className={`poll-status-dot ${
-
-
-
-
-
-
-
-                pollStatus?.is_active
-
-
-
-
-
-
-
-                  ? "dot-active"
-
-
-
-
-
-
-
-                  : "dot-closed"
-
-
-
-
-
-
-
-              }`}
-
-
-
-
-
-
-
-            ></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <h3>
-
-
-
-
-
-
-
-                IPL 2029 Prediction Poll
-
-
-
-
-
-
-
-              </h3>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <p>
-
-
-
-
-
-
-
-                {pollStatus?.is_active
-
-
-
-
-
-
-
-                  ? "The poll is currently open for voting."
-
-
-
-
-
-
-
-                  : "The poll is currently closed."}
-
-
-
-
-
-
-
-              </p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="poll-control-right">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <span
-
-
-
-
-
-
-
-              className={`poll-status-label ${
-
-
-
-
-
-
-
-                pollStatus?.is_active
-
-
-
-
-
-
-
-                  ? "label-active"
-
-
-
-
-
-
-
-                  : "label-closed"
-
-
-
-
-
-
-
-              }`}
-
-
-
-
-
-
-
-            >
-
-
-
-
-
-
-
-              {pollStatus?.is_active
-
-
-
-
-
-
-
-                ? "OPEN"
-
-
-
-
-
-
-
-                : "CLOSED"}
-
-
-
-
-
-
-
-            </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <button
-
-
-
-
-
-
-
-              className={`poll-main-button ${
-
-
-
-
-
-
-
-                pollStatus?.is_active
-
-
-
-
-
-
-
-                  ? "main-close"
-
-
-
-
-
-
-
-                  : "main-open"
-
-
-
-
-
-
-
-              }`}
-
-
-
-
-
-
-
-              onClick={handleTogglePoll}
-
-
-
-
-
-
-
-              disabled={togglingPoll}
-
-
-
-
-
-
-
-            >
-
-
-
-
-
-
-
-              {togglingPoll
-
-
-
-
-
-
-
-                ? "Updating..."
-
-
-
-
-
-
-
-                : pollStatus?.is_active
-
-
-
-
-
-
-
-                ? "Close Poll"
-
-
-
-
-
-
-
-                : "Open Poll"}
-
-
-
-
-
-
-
-            </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {/* =====================================
-
-
-
-
-
-
-
-            PARTICIPANTS
-
-
-
-
-
-
-
-        ====================================== */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <section className="participants-section">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="section-header">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <h2>
-
-
-
-
-
-
-
-                Participants
-
-
-
-
-
-
-
-              </h2>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <p>
-
-
-
-
-
-
-
-                View and manage poll participants
-
-
-
-
-
-
-
-              </p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <span className="participant-count">
-
-
-
-
-
-
-
-              {filteredParticipants.length} shown
-
-
-
-
-
-
-
-            </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          {/* TOOLBAR */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="table-toolbar">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div
-
-
-
-
-
-
-
-              style={{
-
-
-
-
-
-
-
-                display: "flex",
-
-
-
-
-
-
-
-                gap: "10px",
-
-
-
-
-
-
-
-                alignItems: "center",
-
-
-
-
-
-
-
-                flexWrap: "wrap",
-
-
-
-
-
-
-
-              }}
-
-
-
-
-
-
-
-            >
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              {/* SEARCH */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <div className="search-box">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <span className="search-icon">
-
-
-
-
-
-
-
-                  🔍
-
-
-
-
-
-
-
-                </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <input
-
-
-
-
-
-
-
-                  type="text"
-
-
-
-
-
-
-
-                  placeholder="Search participants..."
-
-
-
-
-
-
-
-                  value={searchTerm}
-
-
-
-
-
-
-
-                  onChange={(event) =>
-
-
-
-
-
-
-
-                    setSearchTerm(
-
-
-
-
-
-
-
-                      event.target.value
-
-
-
-
-
-
-
-                    )
-
-
-
-
-
-
-
-                  }
-
-
-
-
-
-
-
-                />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              {/* DATE */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <div className="date-filter-box">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <span>
-
-
-
-
-
-
-
-                  📅
-
-
-
-
-
-
-
-                </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <input
-
-
-
-
-
-
-
-                  type="date"
-
-
-
-
-
-
-
-                  value={dateFilter}
-
-
-
-
-
-
-
-                  onChange={(event) =>
-
-
-
-
-
-
-
-                    setDateFilter(
-
-
-
-
-
-
-
-                      event.target.value
-
-
-
-
-
-
-
-                    )
-
-
-
-
-
-
-
-                  }
-
-
-
-
-
-
-
-                />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              {/* CLEAR */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              {(searchTerm ||
-
-
-
-
-
-
-
-                dateFilter) && (
-
-
-
-
-
-
-
-                <button
-
-
-
-
-
-
-
-                  className="clear-filter-button"
-
-
-
-
-
-
-
-                  onClick={clearFilters}
-
-
-
-
-
-
-
-                >
-
-
-
-
-
-
-
-                  Clear
-
-
-
-
-
-
-
-                </button>
-
-
-
-
-
-
-
-              )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {/* REFRESH */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                      {/* EXPORT CSV */}
-
-
-
-
-
-
-
-          <button
-
-
-
-            className="refresh-button"
-
-
-
-            onClick={exportParticipantsToCSV}
-
-
-
-            style={{
-
-
-
-              background: "#16a34a",
-
-
-
-              color: "#ffffff",
-
-
-
-              border: "none",
-
-
-
-            }}
-
-
-
-          >
-
-
-
-            📥 Export CSV
-
-
-
-          </button>
-
-
-
-
-
-
-
-          {/* REFRESH */}
-
-
-
-
-
-
-
-          <button
-
-
-
-            className="refresh-button"
-
-
-
-            onClick={handleRefresh}
-
-
-
-          >
-
-
-
-            🔄 Refresh
-
-
-
-          </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          {/* RESULT COUNT */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          {!loading && (
-
-
-
-
-
-
-
-            <div
-
-
-
-
-
-
-
-              style={{
-
-
-
-
-
-
-
-                padding:
-
-
-
-
-
-
-
-                  "0 24px 15px",
-
-
-
-
-
-
-
-                fontSize: "12px",
-
-
-
-
-
-
-
-                color: "#8992a2",
-
-
-
-
-
-
-
-              }}
-
-
-
-
-
-
-
-            >
-
-
-
-
-
-
-
-              Showing{" "}
-
-
-
-
-
-
-
-              <strong>
-
-
-
-
-
-
-
-                {filteredParticipants.length}
-
-
-
-
-
-
-
-              </strong>{" "}
-
-
-
-
-
-
-
-              of{" "}
-
-
-
-
-
-
-
-              <strong>
-
-
-
-
-
-
-
-                {participants.length}
-
-
-
-
-
-
-
-              </strong>{" "}
-
-
-
-
-
-
-
-              participants
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-          )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          {/* TABLE */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div className="participants-table-wrapper">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {loading ? (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <div className="empty-state">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <div className="loading-spinner"></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <p>
-
-
-
-
-
-
-
-                  Loading participants...
-
-
-
-
-
-
-
-                </p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            ) : filteredParticipants.length ===
-
-
-
-
-
-
-
-              0 ? (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <div className="empty-state">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <div className="empty-icon">
-
-
-
-
-
-
-
-                  👥
-
-
-
-
-
-
-
-                </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <h3>
-
-
-
-
-
-
-
-                  No participants found
-
-
-
-
-
-
-
-                </h3>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <p>
-
-
-
-
-
-
-
-                  {searchTerm || dateFilter
-
-
-
-
-
-
-
-                    ? "Try changing your search or date filter."
-
-
-
-
-
-
-
-                    : "No participants have submitted the poll yet."}
-
-
-
-
-
-
-
-                </p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            ) : (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <table className="participants-table">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <thead>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  <tr>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <th>
-
-
-
-
-
-
-
-                      #
-
-
-
-
-
-
-
-                    </th>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <th>
-
-
-
-
-
-
-
-                      Participant
-
-
-
-
-
-
-
-                    </th>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <th>
-
-
-
-
-
-
-
-                      Submitted At
-
-
-
-
-
-
-
-                    </th>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <th>
-
-
-
-
-
-
-
-                      Actions
-
-
-
-
-
-
-
-                    </th>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  </tr>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                </thead>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <tbody>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  {filteredParticipants.map(
-
-
-
-
-
-
-
-                    (participant, index) => (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                      <tr
-
-
-
-
-
-
-
-                        key={
-
-
-
-
-
-
-
-                          participant.id
-
-
-
-
-
-
-
-                        }
-
-
-
-
-
-
-
-                      >
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <td className="serial-number">
-
-
-
-
-
-
-
-                          {index + 1}
-
-
-
-
-
-
-
-                        </td>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <td>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                          <div className="participant-name">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            <div className="participant-avatar">
-
-
-
-
-
-
-
-                              {participant.name
-
-
-
-
-
-
-
-                                .charAt(0)
-
-
-
-
-
-
-
-                                .toUpperCase()}
-
-
-
-
-
-
-
-                            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            <strong>
-
-
-
-
-
-
-
-                              {participant.name}
-
-
-
-
-
-
-
-                            </strong>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        </td>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <td>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                          <div>
-
-
-
-
-
-
-
-                            <strong>
-
-
-
-
-
-
-
-                              {formatDate(
-
-
-
-
-
-
-
-                                participant.submitted_at
-
-
-
-
-
-
-
-                              )}
-
-
-
-
-
-
-
-                            </strong>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            <div
-
-
-
-
-
-
-
-                              style={{
-
-
-
-
-
-
-
-                                marginTop: "3px",
-
-
-
-
-
-
-
-                                fontSize: "11px",
-
-
-
-
-
-
-
-                                color: "#9aa3b2",
-
-
-
-
-
-
-
-                              }}
-
-
-
-
-
-
-
-                            >
-
-
-
-
-
-
-
-                              {formatDateTime(
-
-
-
-
-
-
-
-                                participant.submitted_at
-
-
-
-
-
-
-
-                              )}
-
-
-
-
-
-
-
-                            </div>
-
-
-
-
-
-
-
-                          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        </td>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <td>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                          <div
-
-
-
-
-
-
-
-                            style={{
-
-
-
-
-
-
-
-                              display: "flex",
-
-
-
-
-
-
-
-                              gap: "8px",
-
-
-
-
-
-
-
-                              flexWrap: "wrap",
-
-
-
-
-
-
-
-                            }}
-
-
-
-
-
-
-
-                          >
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            <button
-
-
-
-
-
-
-
-                              className="view-button"
-
-
-
-
-
-
-
-                              onClick={() =>
-
-
-
-
-
-
-
-                                setSelectedParticipant(
-
-
-
-
-
-
-
-                                  participant
-
-
-
-
-
-
-
-                                )
-
-
-
-
-
-
-
-                              }
-
-
-
-
-
-
-
-                            >
-
-
-
-
-
-
-
-                              View Answers
-
-
-
-
-
-
-
-                            </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            <button
-
-
-
-
-
-
-
-                              className="delete-button"
-
-
-
-
-
-
-
-                              onClick={() =>
-
-
-
-
-
-
-
-                                handleDeleteParticipant(
-
-
-
-
-
-
-
-                                  participant
-
-
-
-
-
-
-
-                                )
-
-
-
-
-
-
-
-                              }
-
-
-
-
-
-
-
-                              disabled={
-
-
-
-
-
-
-
-                                deletingId ===
-
-
-
-
-
-
-
-                                participant.id
-
-
-
-
-
-
-
-                              }
-
-
-
-
-
-
-
-                              style={{
-
-
-
-
-
-
-
-                                border: "none",
-
-
-
-
-
-
-
-                                background:
-
-
-
-
-
-
-
-                                  "#fee2e2",
-
-
-
-
-
-
-
-                                color:
-
-
-
-
-
-
-
-                                  "#dc2626",
-
-
-
-
-
-
-
-                                borderRadius:
-
-
-
-
-
-
-
-                                  "7px",
-
-
-
-
-
-
-
-                                padding:
-
-
-
-
-
-
-
-                                  "8px 11px",
-
-
-
-
-
-
-
-                                fontSize:
-
-
-
-
-
-
-
-                                  "11px",
-
-
-
-
-
-
-
-                                fontWeight:
-
-
-
-
-
-
-
-                                  "700",
-
-
-
-
-
-
-
-                                cursor:
-
-
-
-
-
-
-
-                                  deletingId ===
-
-
-
-
-
-
-
-                                  participant.id
-
-
-
-
-
-
-
-                                    ? "not-allowed"
-
-
-
-
-
-
-
-                                    : "pointer",
-
-
-
-
-
-
-
-                                opacity:
-
-
-
-
-
-
-
-                                  deletingId ===
-
-
-
-
-
-
-
-                                  participant.id
-
-
-
-
-
-
-
-                                    ? 0.6
-
-
-
-
-
-
-
-                                    : 1,
-
-
-
-
-
-
-
-                              }}
-
-
-
-
-
-
-
-                            >
-
-
-
-
-
-
-
-                              {deletingId ===
-
-
-
-
-
-
-
-                              participant.id
-
-
-
-
-
-
-
-                                ? "Deleting..."
-
-
-
-
-
-
-
-                                : "Delete"}
-
-
-
-
-
-
-
-                            </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        </td>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                      </tr>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    )
-
-
-
-
-
-
-
-                  )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                </tbody>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              </table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </main>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {/* =====================================
-
-
-
-
-
-
-
-          ANSWERS MODAL
-
-
-
-
-
-
-
-      ====================================== */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {selectedParticipant && (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <div
-
-
-
-
-
-
-
-          className="modal-overlay"
-
-
-
-
-
-
-
-          onClick={() =>
-
-
-
-
-
-
-
-            setSelectedParticipant(null)
-
-
-
-
-
-
-
-          }
-
-
-
-
-
-
-
-        >
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <div
-
-
-
-
-
-
-
-            className="answers-modal"
-
-
-
-
-
-
-
-            onClick={(event) =>
-
-
-
-
-
-
-
-              event.stopPropagation()
-
-
-
-
-
-
-
-            }
-
-
-
-
-
-
-
-          >
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="modal-header">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <h2>
-
-
-
-
-
-
-
-                  Participant Answers
-
-
-
-
-
-
-
-                </h2>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <p>
-
-
-
-
-
-
-
-                  {selectedParticipant.name}
-
-
-
-
-
-
-
-                </p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <button
-
-
-
-
-
-
-
-                className="modal-close"
-
-
-
-
-
-
-
-                onClick={() =>
-
-
-
-
-
-
-
-                  setSelectedParticipant(null)
-
-
-
-
-
-
-
-                }
-
-
-
-
-
-
-
-              >
-
-
-
-
-
-
-
-                ✕
-
-
-
-
-
-
-
-              </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="modal-participant-info">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <strong>
-
-
-
-
-
-
-
-                {selectedParticipant.name}
-
-
-
-
-
-
-
-              </strong>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <span>
-
-
-
-
-
-
-
-                Submitted:{" "}
-
-
-
-
-
-
-
-                {formatDateTime(
-
-
-
-
-
-
-
-                  selectedParticipant.submitted_at
-
-
-
-
-
-
-
-                )}
-
-
-
-
-
-
-
-              </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="answers-list">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              {selectedParticipant.responses &&
-
-
-
-
-
-
-
-              selectedParticipant.responses.length >
-
-
-
-
-
-
-
-                0 ? (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                selectedParticipant.responses.map(
-
-
-
-
-
-
-
-                  (response, index) => (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <div
-
-
-
-
-
-
-
-                      className="answer-card"
-
-
-
-
-
-
-
-                      key={index}
-
-
-
-
-
-
-
-                    >
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                      <div className="question-number">
-
-
-
-
-
-
-
-                        {index + 1}
-
-
-
-
-
-
-
-                      </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                      <div className="answer-content">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <h4>
-
-
-
-
-
-
-
-                          {response.question}
-
-
-
-
-
-
-
-                        </h4>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <p>
-
-
-
-
-
-
-
-                          {response.option}
-
-
-
-
-
-
-
-                        </p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                      </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  )
-
-
-
-
-
-
-
-                )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              ) : (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <div className="empty-state">
-
-
-
-
-
-
-
-                  No answers available.
-
-
-
-
-
-
-
-                </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div className="modal-footer">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <button
-
-
-
-
-
-
-
-                className="modal-done-button"
-
-
-
-
-
-
-
-                onClick={() =>
-
-
-
-
-
-
-
-                  setSelectedParticipant(null)
-
-
-
-
-
-
-
-                }
-
-
-
-
-
-
-
-              >
-
-
-
-
-
-
-
-                Close
-
-
-
-
-
-
-
-              </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-
-
-
-
-
-
-
-  );
-
-
-
-
-
-
 
 }
 
+function getCsrfTokenFromCookie() {
 
+  const cookie = document.cookie
 
+    .split(";")
 
+    .map((part) => part.trim())
 
+    .find((part) => part.startsWith("csrftoken="));
 
+  return cookie
 
+    ? decodeURIComponent(cookie.slice("csrftoken=".length))
 
+    : "";
 
+}
 
+function getList(data, keys = []) {
 
+  if (Array.isArray(data)) return data;
 
+  for (const key of keys) {
 
+    if (Array.isArray(data?.[key])) return data[key];
 
+  }
+
+  return [];
+
+}
+
+function AdminDashboard({ username, onLogout }) {
+
+  const navigate = useNavigate();
+
+  const [polls, setPolls] = useState([]);
+
+  const [selectedPollId, setSelectedPollId] = useState("");
+
+  const [participants, setParticipants] = useState([]);
+
+  const [loadingPolls, setLoadingPolls] = useState(true);
+
+  const [loadingParticipants, setLoadingParticipants] = useState(false);
+
+  const [selectedParticipant, setSelectedParticipant] = useState(null);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [dateFilter, setDateFilter] = useState("");
+
+  const [error, setError] = useState("");
+
+  const [deletingId, setDeletingId] = useState(null);
+
+  const [togglingPoll, setTogglingPoll] = useState(false);
+
+  const selectedPoll = useMemo(
+
+    () =>
+
+      polls.find(
+
+        (poll) => String(poll.id) === String(selectedPollId)
+
+      ) || null,
+
+    [polls, selectedPollId]
+
+  );
+
+  const fetchPolls = useCallback(async () => {
+
+    setLoadingPolls(true);
+
+    setError("");
+
+    try {
+
+      const response = await fetch(
+
+        `${API_BASE}/api/admin/polls/`,
+
+        {
+
+          credentials: "include",
+
+          headers: { Accept: "application/json" },
+
+        }
+
+      );
+
+      const data = await readResponse(response);
+
+      if (!response.ok) {
+
+        throw new Error(
+
+          data.detail ||
+
+            data.message ||
+
+            "Unable to load polls. Please check your admin session."
+
+        );
+
+      }
+
+      const list = getList(data, ["results", "polls"]);
+
+      setPolls(list);
+
+      setSelectedPollId((current) => {
+
+        if (
+
+          current &&
+
+          list.some(
+
+            (poll) => String(poll.id) === String(current)
+
+          )
+
+        ) {
+
+          return current;
+
+        }
+
+        return list.length ? String(list[0].id) : "";
+
+      });
+
+    } catch (err) {
+
+      console.error("Poll list error:", err);
+
+      setError(err.message || "Unable to load polls.");
+
+      setPolls([]);
+
+      setSelectedPollId("");
+
+    } finally {
+
+      setLoadingPolls(false);
+
+    }
+
+  }, []);
+
+  const fetchParticipants = useCallback(async (pollId) => {
+
+    if (!pollId) {
+
+      setParticipants([]);
+
+      setLoadingParticipants(false);
+
+      return;
+
+    }
+
+    setLoadingParticipants(true);
+
+    setError("");
+
+    try {
+
+      const response = await fetch(
+
+        `${API_BASE}/api/admin/participants/?poll_id=${encodeURIComponent(
+
+          pollId
+
+        )}`,
+
+        {
+
+          credentials: "include",
+
+          headers: { Accept: "application/json" },
+
+        }
+
+      );
+
+      const data = await readResponse(response);
+
+      if (!response.ok) {
+
+        throw new Error(
+
+          data.detail || data.message || "Unable to load participants."
+
+        );
+
+      }
+
+      setParticipants(
+
+        getList(data, ["results", "participants"])
+
+      );
+
+    } catch (err) {
+
+      console.error("Participants fetch error:", err);
+
+      setParticipants([]);
+
+      setError(err.message || "Unable to load participants.");
+
+    } finally {
+
+      setLoadingParticipants(false);
+
+    }
+
+  }, []);
+
+  useEffect(() => {
+
+    fetchPolls();
+
+  }, [fetchPolls]);
+
+  useEffect(() => {
+
+    setSearchTerm("");
+
+    setDateFilter("");
+
+    setSelectedParticipant(null);
+
+    fetchParticipants(selectedPollId);
+
+  }, [selectedPollId, fetchParticipants]);
+
+  const handleRefresh = async () => {
+
+    await fetchPolls();
+
+    if (selectedPollId) {
+
+      await fetchParticipants(selectedPollId);
+
+    }
+
+  };
+
+  const fetchCsrfToken = async () => {
+
+    const cookieToken = getCsrfTokenFromCookie();
+
+    if (cookieToken) return cookieToken;
+
+    try {
+
+      const response = await fetch(
+
+        `${API_BASE}/api/admin/me/`,
+
+        {
+
+          credentials: "include",
+
+          headers: { Accept: "application/json" },
+
+        }
+
+      );
+
+      const data = await readResponse(response);
+
+      return (
+
+        data.csrfToken ||
+
+        getCsrfTokenFromCookie() ||
+
+        ""
+
+      );
+
+    } catch (err) {
+
+      console.error("CSRF token request error:", err);
+
+      return "";
+
+    }
+
+  };
+
+  const handleTogglePoll = async () => {
+
+    if (!selectedPoll || togglingPoll) return;
+
+    setTogglingPoll(true);
+
+    setError("");
+
+    try {
+
+      const csrfToken = await fetchCsrfToken();
+
+      const response = await fetch(
+
+        `${API_BASE}/api/admin/polls/${selectedPoll.id}/`,
+
+        {
+
+          method: "PATCH",
+
+          credentials: "include",
+
+          headers: {
+
+            "Content-Type": "application/json",
+
+            Accept: "application/json",
+
+            ...(csrfToken
+
+              ? { "X-CSRFToken": csrfToken }
+
+              : {}),
+
+          },
+
+          body: JSON.stringify({
+
+            is_active: !selectedPoll.is_active,
+
+          }),
+
+        }
+
+      );
+
+      const data = await readResponse(response);
+
+      if (!response.ok) {
+
+        throw new Error(
+
+          data.detail ||
+
+            data.message ||
+
+            "Unable to change poll status."
+
+        );
+
+      }
+
+      const updatedPoll = data.poll || data;
+
+      const activeValue =
+
+        typeof updatedPoll.is_active === "boolean"
+
+          ? updatedPoll.is_active
+
+          : !selectedPoll.is_active;
+
+      setPolls((current) =>
+
+        current.map((poll) =>
+
+          String(poll.id) === String(selectedPoll.id)
+
+            ? {
+
+                ...poll,
+
+                ...updatedPoll,
+
+                is_active: activeValue,
+
+              }
+
+            : poll
+
+        )
+
+      );
+
+    } catch (err) {
+
+      console.error("Toggle poll error:", err);
+
+      setError(err.message || "Unable to change poll status.");
+
+    } finally {
+
+      setTogglingPoll(false);
+
+    }
+
+  };
+
+  const formatDate = (value, includeTime = false) => {
+
+    if (!value) return "N/A";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "N/A";
+
+    return date.toLocaleString(
+
+      "en-IN",
+
+      includeTime
+
+        ? {
+
+            day: "2-digit",
+
+            month: "short",
+
+            year: "numeric",
+
+            hour: "2-digit",
+
+            minute: "2-digit",
+
+          }
+
+        : {
+
+            day: "2-digit",
+
+            month: "short",
+
+            year: "numeric",
+
+          }
+
+    );
+
+  };
+
+  const filteredParticipants = useMemo(() => {
+
+    const search = searchTerm.trim().toLowerCase();
+
+    return participants.filter((participant) => {
+
+      const name = String(
+
+        participant?.name || ""
+
+      ).toLowerCase();
+
+      const matchesSearch = name.includes(search);
+
+      let matchesDate = true;
+
+      if (dateFilter && participant?.submitted_at) {
+
+        const date = new Date(participant.submitted_at);
+
+        if (Number.isNaN(date.getTime())) {
+
+          matchesDate = false;
+
+        } else {
+
+          const localDate = [
+
+            date.getFullYear(),
+
+            String(date.getMonth() + 1).padStart(2, "0"),
+
+            String(date.getDate()).padStart(2, "0"),
+
+          ].join("-");
+
+          matchesDate = localDate === dateFilter;
+
+        }
+
+      } else if (dateFilter) {
+
+        matchesDate = false;
+
+      }
+
+      return matchesSearch && matchesDate;
+
+    });
+
+  }, [participants, searchTerm, dateFilter]);
+
+  const handleDeleteParticipant = async (participant) => {
+
+    const confirmed = window.confirm(
+
+      `Are you sure you want to delete ${
+
+        participant.name || "this participant"
+
+      }?`
+
+    );
+
+    if (!confirmed) return;
+
+    setDeletingId(participant.id);
+
+    setError("");
+
+    try {
+
+      const csrfToken = await fetchCsrfToken();
+
+      const response = await fetch(
+
+        `${API_BASE}/api/admin/participants/${participant.id}/`,
+
+        {
+
+          method: "DELETE",
+
+          credentials: "include",
+
+          headers: {
+
+            Accept: "application/json",
+
+            ...(csrfToken
+
+              ? { "X-CSRFToken": csrfToken }
+
+              : {}),
+
+          },
+
+        }
+
+      );
+
+      const data = await readResponse(response);
+
+      if (!response.ok) {
+
+        throw new Error(
+
+          data.detail ||
+
+            data.message ||
+
+            "Failed to delete participant."
+
+        );
+
+      }
+
+      setParticipants((current) =>
+
+        current.filter(
+
+          (item) => String(item.id) !== String(participant.id)
+
+        )
+
+      );
+
+      setSelectedParticipant((current) =>
+
+        current &&
+
+        String(current.id) === String(participant.id)
+
+          ? null
+
+          : current
+
+      );
+
+    } catch (err) {
+
+      console.error("Delete participant error:", err);
+
+      setError(err.message || "Unable to delete participant.");
+
+    } finally {
+
+      setDeletingId(null);
+
+    }
+
+  };
+
+  const exportParticipantsToCSV = () => {
+
+    if (!filteredParticipants.length) {
+
+      window.alert("No participants available to export.");
+
+      return;
+
+    }
+
+    const escapeCSV = (value) =>
+
+      `"${String(value ?? "").replace(/"/g, '""')}"`;
+
+    const rows = [
+
+      [
+
+        "Participant ID",
+
+        "Name",
+
+        "Submitted At",
+
+        "Question",
+
+        "Answer",
+
+      ],
+
+    ];
+
+    filteredParticipants.forEach((participant) => {
+
+      const responses = Array.isArray(participant.responses)
+
+        ? participant.responses
+
+        : [];
+
+      if (!responses.length) {
+
+        rows.push([
+
+          participant.id,
+
+          participant.name,
+
+          formatDate(participant.submitted_at, true),
+
+          "",
+
+          "",
+
+        ]);
+
+      } else {
+
+        responses.forEach((answer) => {
+
+          rows.push([
+
+            participant.id,
+
+            participant.name,
+
+            formatDate(participant.submitted_at, true),
+
+            answer.question || "",
+
+            answer.option || "",
+
+          ]);
+
+        });
+
+      }
+
+    });
+
+    const csv =
+
+      "\uFEFF" +
+
+      rows
+
+        .map((row) => row.map(escapeCSV).join(","))
+
+        .join("\r\n");
+
+    const blob = new Blob([csv], {
+
+      type: "text/csv;charset=utf-8;",
+
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    const safeTitle = (
+
+      selectedPoll?.title || "poll"
+
+    ).replace(/[^a-z0-9_-]+/gi, "_");
+
+    link.href = url;
+
+    link.download = `${safeTitle}_participants_${
+
+      new Date().toISOString().slice(0, 10)
+
+    }.csv`;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+  };
+
+  const totalQuestions = Array.isArray(selectedPoll?.questions)
+
+    ? selectedPoll.questions.length
+
+    : 0;
+
+  return (
+
+    <div className="admin-layout">
+
+      <aside className="admin-sidebar">
+
+        <div className="sidebar-brand">
+
+          <div className="sidebar-logo">🏏</div>
+
+          <div>
+
+            <h2>Poll Admin</h2>
+
+            <p>Admin Panel</p>
+
+          </div>
+
+        </div>
+
+        <nav className="sidebar-nav">
+
+          <button
+
+            type="button"
+
+            className="nav-item active"
+
+            onClick={() => navigate("/admin/dashboard")}
+
+          >
+
+            <span className="nav-icon">📊</span>
+
+            Dashboard
+
+          </button>
+
+          <button
+
+            type="button"
+
+            className="nav-item"
+
+            onClick={() => navigate("/admin/analytics")}
+
+          >
+
+            <span className="nav-icon">📈</span>
+
+            Analytics
+
+          </button>
+
+          <button
+
+            type="button"
+
+            className="nav-item"
+
+            onClick={() => navigate("/admin/polls")}
+
+          >
+
+            <span className="nav-icon">🗳️</span>
+
+            Poll Management
+
+          </button>
+
+        </nav>
+
+        <div className="sidebar-bottom">
+
+          <div className="admin-user">
+
+            <div className="user-avatar">
+
+              {String(username || "A").charAt(0).toUpperCase()}
+
+            </div>
+
+            <div className="user-details">
+
+              <strong>{username || "Admin"}</strong>
+
+              <span>Administrator</span>
+
+            </div>
+
+          </div>
+
+          <button
+
+            type="button"
+
+            className="logout-button"
+
+            onClick={onLogout}
+
+          >
+
+            <span className="button-icon" aria-hidden="true">↪</span> Logout
+
+          </button>
+
+        </div>
+
+      </aside>
+
+      <main className="admin-main">
+
+        <header className="dashboard-header">
+
+          <div>
+
+            <p className="eyebrow">POLL MANAGEMENT SYSTEM</p>
+
+            <h1>Admin Dashboard</h1>
+
+            <p className="header-description">
+
+              Manage polls, participants and results from one place.
+
+            </p>
+
+          </div>
+
+          <div className="dashboard-header-actions">
+
+            <div className="header-user">
+
+              Logged in as <strong>{username || "Admin"}</strong>
+
+            </div>
+
+            <button
+
+              type="button"
+
+              className="create-poll-dashboard-button"
+
+              onClick={() => navigate("/admin/polls")}
+
+            >
+
+              <span className="create-poll-plus">＋</span>
+
+              <span className="create-poll-copy">
+
+                <strong>Create New Poll</strong>
+
+                <small>Add questions and answer options</small>
+
+              </span>
+
+              <span className="create-poll-arrow">→</span>
+
+            </button>
+
+          </div>
+
+        </header>
+
+        {error && (
+
+          <div className="dashboard-error" role="alert">
+
+            {error}
+
+          </div>
+
+        )}
+
+        <section className="poll-picker-section">
+
+          <div className="poll-picker-heading">
+
+            <div>
+
+              <h2>Your Polls</h2>
+
+              <p>
+
+                Select a poll to view its participants and manage its status.
+
+              </p>
+
+            </div>
+
+            <button
+
+              type="button"
+
+              className="refresh-button"
+
+              onClick={() => navigate("/admin/polls")}
+
+            >
+
+              <span className="button-icon" aria-hidden="true">🗳</span> Manage Polls
+
+            </button>
+
+          </div>
+
+          {loadingPolls ? (
+
+            <div className="empty-state">Loading polls...</div>
+
+          ) : polls.length === 0 ? (
+
+            <div className="empty-state">
+
+              <h3>No polls found</h3>
+
+              <p>Create your first poll to start collecting responses.</p>
+
+              <button
+
+                type="button"
+
+                className="create-poll-dashboard-button"
+
+                onClick={() => navigate("/admin/polls")}
+
+              >
+
+                <span className="create-poll-plus">＋</span>
+
+                <span className="create-poll-copy">
+
+                  <strong>Create Your First Poll</strong>
+
+                  <small>Set up your poll in minutes</small>
+
+                </span>
+
+                <span className="create-poll-arrow">→</span>
+
+              </button>
+
+            </div>
+
+          ) : (
+
+            <div className="poll-picker-grid">
+
+              {polls.map((poll) => (
+
+                <button
+
+                  type="button"
+
+                  key={poll.id}
+
+                  className={`poll-picker-card ${
+
+                    String(selectedPollId) === String(poll.id)
+
+                      ? "selected"
+
+                      : ""
+
+                  }`}
+
+                  onClick={() => setSelectedPollId(String(poll.id))}
+
+                >
+
+                  <span
+
+                    className={`poll-picker-dot ${
+
+                      poll.is_active ? "active" : "closed"
+
+                    }`}
+
+                  />
+
+                  <span className="poll-picker-copy">
+
+                    <strong>{poll.title || `Poll ${poll.id}`}</strong>
+
+                    <small>
+
+                      {Array.isArray(poll.questions)
+
+                        ? poll.questions.length
+
+                        : 0}{" "}
+
+                      questions · {poll.is_active ? "Open" : "Closed"}
+
+                    </small>
+
+                  </span>
+
+                  <span className="poll-picker-count">
+
+                    {String(selectedPollId) === String(poll.id)
+
+                      ? "Selected"
+
+                      : "View →"}
+
+                  </span>
+
+                </button>
+
+              ))}
+
+            </div>
+
+          )}
+
+        </section>
+
+        <section className="stats-grid">
+
+          <div className="stat-card">
+
+            <div className="stat-icon blue">👥</div>
+
+            <div className="stat-content">
+
+              <span>Total Participants</span>
+
+              <strong>{participants.length}</strong>
+
+            </div>
+
+          </div>
+
+          <div className="stat-card">
+
+            <div className="stat-icon green">✓</div>
+
+            <div className="stat-content">
+
+              <span>Poll Status</span>
+
+              <strong
+
+                className={
+
+                  selectedPoll?.is_active
+
+                    ? "status-active"
+
+                    : "status-closed"
+
+                }
+
+              >
+
+                {selectedPoll
+
+                  ? selectedPoll.is_active
+
+                    ? "Active"
+
+                    : "Closed"
+
+                  : "N/A"}
+
+              </strong>
+
+            </div>
+
+          </div>
+
+          <div className="stat-card">
+
+            <div className="stat-icon red">?</div>
+
+            <div className="stat-content">
+
+              <span>Total Questions</span>
+
+              <strong>{totalQuestions}</strong>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <section className="poll-control-card">
+
+          <div className="poll-control-left">
+
+            <div
+
+              className={`poll-status-dot ${
+
+                selectedPoll?.is_active
+
+                  ? "dot-active"
+
+                  : "dot-closed"
+
+              }`}
+
+            />
+
+            <div>
+
+              <h3>{selectedPoll?.title || "Select a poll"}</h3>
+
+              <p>
+
+                {selectedPoll
+
+                  ? selectedPoll.is_active
+
+                    ? "This poll is open for voting."
+
+                    : "This poll is closed for voting."
+
+                  : "Create or select a poll to continue."}
+
+              </p>
+
+            </div>
+
+          </div>
+
+          <div className="poll-control-right">
+
+            <span
+
+              className={`poll-status-label ${
+
+                selectedPoll?.is_active
+
+                  ? "label-active"
+
+                  : "label-closed"
+
+              }`}
+
+            >
+
+              {selectedPoll
+
+                ? selectedPoll.is_active
+
+                  ? "OPEN"
+
+                  : "CLOSED"
+
+                : "NO POLL"}
+
+            </span>
+
+            <button
+
+              type="button"
+
+              className={`poll-main-button ${
+
+                selectedPoll?.is_active
+
+                  ? "main-close"
+
+                  : "main-open"
+
+              }`}
+
+              onClick={handleTogglePoll}
+
+              disabled={!selectedPoll || togglingPoll}
+
+            >
+
+              {togglingPoll
+
+                ? "Updating..."
+
+                : selectedPoll?.is_active
+
+                  ? "Close Poll"
+
+                  : "▶ Open Poll"}
+
+            </button>
+
+          </div>
+
+        </section>
+
+        <section className="participants-section">
+
+          <div className="section-header">
+
+            <div>
+
+              <h2>Participants</h2>
+
+              <p>
+
+                {selectedPoll
+
+                  ? `Responses for ${selectedPoll.title}`
+
+                  : "Select a poll to view participants."}
+
+              </p>
+
+            </div>
+
+            <span className="participant-count">
+
+              {filteredParticipants.length} shown
+
+            </span>
+
+          </div>
+
+          <div className="table-toolbar">
+
+            <div
+
+              className="toolbar-left"
+
+              style={{
+
+                display: "flex",
+
+                gap: 10,
+
+                alignItems: "center",
+
+                flexWrap: "wrap",
+
+              }}
+
+            >
+
+              <div className="search-box">
+
+                <span className="search-icon icon-motion" aria-hidden="true">⌕</span>
+
+                <input
+
+                  type="search"
+
+                  placeholder="Search participants..."
+
+                  value={searchTerm}
+
+                  onChange={(event) => setSearchTerm(event.target.value)}
+
+                />
+
+              </div>
+
+              <div className="date-filter-box">
+
+                <span className="date-icon icon-motion" aria-hidden="true">▦</span>
+
+                <input
+
+                  type="date"
+
+                  value={dateFilter}
+
+                  onChange={(event) => setDateFilter(event.target.value)}
+
+                  aria-label="Filter participants by date"
+
+                />
+
+              </div>
+
+              {(searchTerm || dateFilter) && (
+
+                <button
+
+                  type="button"
+
+                  className="clear-filter-button"
+
+                  onClick={() => {
+
+                    setSearchTerm("");
+
+                    setDateFilter("");
+
+                  }}
+
+                >
+
+                  Clear
+
+                </button>
+
+              )}
+
+            </div>
+
+            <div
+
+              className="toolbar-actions"
+
+              style={{ display: "flex", gap: 8, flexWrap: "wrap" }}
+
+            >
+
+              <button
+
+                type="button"
+
+                className="refresh-button"
+
+                onClick={exportParticipantsToCSV}
+
+              >
+
+                <span className="button-icon" aria-hidden="true">⇩</span> Export CSV
+
+              </button>
+
+              <button
+
+                type="button"
+
+                className="refresh-button"
+
+                onClick={handleRefresh}
+
+              >
+
+                <span className="button-icon" aria-hidden="true">↻</span> Refresh
+
+              </button>
+
+            </div>
+
+          </div>
+
+          {!loadingParticipants && (
+
+            <div
+
+              style={{
+
+                padding: "0 24px 15px",
+
+                fontSize: 12,
+
+                color: "#8992a2",
+
+              }}
+
+            >
+
+              Showing <strong>{filteredParticipants.length}</strong> of{" "}
+
+              <strong>{participants.length}</strong> participants for this poll
+
+            </div>
+
+          )}
+
+          <div className="participants-table-wrapper">
+
+            {loadingParticipants ? (
+
+              <div className="empty-state">
+
+                <div className="loading-spinner" />
+
+                <p>Loading participants...</p>
+
+              </div>
+
+            ) : filteredParticipants.length === 0 ? (
+
+              <div className="empty-state">
+
+                <div className="empty-icon">👥</div>
+
+                <h3>No participants found</h3>
+
+                <p>
+
+                  {searchTerm || dateFilter
+
+                    ? "Try changing your search or date filter."
+
+                    : "No participants have submitted this poll yet."}
+
+                </p>
+
+              </div>
+
+            ) : (
+
+              <table className="participants-table">
+
+                <thead>
+
+                  <tr>
+
+                    <th>#</th>
+
+                    <th>Participant</th>
+
+                    <th>Submitted At</th>
+
+                    <th>Actions</th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  {filteredParticipants.map((participant, index) => (
+
+                    <tr key={participant.id}>
+
+                      <td className="serial-number">{index + 1}</td>
+
+                      <td>
+
+                        <div className="participant-name">
+
+                          <div className="participant-avatar">
+
+                            {String(
+
+                              participant.name || "?"
+
+                            ).charAt(0).toUpperCase()}
+
+                          </div>
+
+                          <strong>
+
+                            {participant.name || "Unnamed participant"}
+
+                          </strong>
+
+                        </div>
+
+                      </td>
+
+                      <td>
+
+                        <strong>
+
+                          {formatDate(participant.submitted_at)}
+
+                        </strong>
+
+                        <div
+
+                          style={{
+
+                            marginTop: 3,
+
+                            fontSize: 11,
+
+                            color: "#9aa3b2",
+
+                          }}
+
+                        >
+
+                          {formatDate(participant.submitted_at, true)}
+
+                        </div>
+
+                      </td>
+
+                      <td>
+
+                        <div
+
+                          style={{
+
+                            display: "flex",
+
+                            gap: 8,
+
+                            flexWrap: "wrap",
+
+                          }}
+
+                        >
+
+                          <button
+
+                            type="button"
+
+                            className="view-button"
+
+                            onClick={() =>
+
+                              setSelectedParticipant(participant)
+
+                            }
+
+                          >
+
+                            <span className="button-icon" aria-hidden="true">◉</span> View Answers
+
+                          </button>
+
+                          <button
+
+                            type="button"
+
+                            className="delete-button"
+
+                            onClick={() =>
+
+                              handleDeleteParticipant(participant)
+
+                            }
+
+                            disabled={deletingId === participant.id}
+
+                          >
+
+                            {deletingId === participant.id
+
+                              ? "Deleting..."
+
+                              : <><span className="button-icon" aria-hidden="true">⌫</span> Delete</>}
+
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            )}
+
+          </div>
+
+        </section>
+
+      </main>
+
+      {selectedParticipant && (
+
+        <div
+
+          className="modal-overlay"
+
+          onClick={() => setSelectedParticipant(null)}
+
+        >
+
+          <div
+
+            className="answers-modal"
+
+            onClick={(event) => event.stopPropagation()}
+
+          >
+
+            <div className="modal-header">
+
+              <div>
+
+                <h2>Participant Answers</h2>
+
+                <p>{selectedParticipant.name || "Participant"}</p>
+
+              </div>
+
+              <button
+
+                type="button"
+
+                className="modal-close"
+
+                onClick={() => setSelectedParticipant(null)}
+
+              >
+
+                ✕
+
+              </button>
+
+            </div>
+
+            <div className="modal-participant-info">
+
+              <strong>
+
+                {selectedParticipant.name || "Participant"}
+
+              </strong>
+
+              <span>
+
+                Submitted:{" "}
+
+                {formatDate(selectedParticipant.submitted_at, true)}
+
+              </span>
+
+            </div>
+
+            <div className="answers-list">
+
+              {Array.isArray(selectedParticipant.responses) &&
+
+              selectedParticipant.responses.length ? (
+
+                selectedParticipant.responses.map((answer, index) => (
+
+                  <div
+
+                    className="answer-card"
+
+                    key={`${answer.question || "q"}-${index}`}
+
+                  >
+
+                    <div className="question-number">{index + 1}</div>
+
+                    <div className="answer-content">
+
+                      <h4>
+
+                        {answer.question || `Question ${index + 1}`}
+
+                      </h4>
+
+                      <p>
+
+                        {answer.option ||
+
+                          answer.options ||
+
+                          "No answer recorded"}
+
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                ))
+
+              ) : (
+
+                <div className="empty-state">No answers available.</div>
+
+              )}
+
+            </div>
+
+            <div className="modal-footer">
+
+              <button
+
+                type="button"
+
+                className="modal-done-button"
+
+                onClick={() => setSelectedParticipant(null)}
+
+              >
+
+                Close
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+    </div>
+
+  );
+
+}
 
 export default AdminDashboard;
