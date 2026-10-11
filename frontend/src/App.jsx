@@ -11,7 +11,7 @@ import {
 import AdminLogin from "./AdminLogin";
 import AdminDashboard from "./AdminDashboard";
 import Analytics from "./Analytics";
-import PollManagement from "./PollManagement";
+import PollManagement from "./PollManagement.jsx";
 import "./App.css";
 import "./PollSelection.css";
 
