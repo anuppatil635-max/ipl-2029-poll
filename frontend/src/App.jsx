@@ -843,6 +843,20 @@ function App() {
         />
 
         <Route
+          path="/admin/participants"
+          element={
+            adminUser ? (
+              <AdminDashboard
+                username={adminUser}
+              onLogout={handleLogout}
+              />
+            ) : (
+            <Navigate to="/admin" replace />
+            )
+          }
+        />
+
+        <Route
           path="/admin/analytics"
           element={
             adminUser ? (
