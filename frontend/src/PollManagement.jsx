@@ -2,7 +2,13 @@
 import { useCallback, useEffect, useState } from "react";
 import "./PollManagement.css";
 
-const API = `${import.meta.env.VITE_API_URL}/api`;
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV
+    ? "http://localhost:8082"
+    : "https://ipl-2029-backend.onrender.com");
+
+const API = `${API_BASE}/api`;
 
 function PollManagement() {
   const [polls, setPolls] = useState([]);

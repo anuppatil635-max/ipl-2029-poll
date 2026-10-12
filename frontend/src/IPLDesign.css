@@ -1,12 +1,8 @@
-
-
 /* ==========================================
 
    IPL 2029 — POLLSPACE DESIGN
 
-   \========================================== */
-
-
+   ========================================== */
 
 .public-page,
 
@@ -24,8 +20,6 @@
 
 }
 
-
-
 .public-page *,
 
 .question-page * {
@@ -33,8 +27,6 @@
   box-sizing: border-box;
 
 }
-
-
 
 .public-topbar,
 
@@ -58,8 +50,6 @@
 
 }
 
-
-
 .brand,
 
 .question-brand {
@@ -74,8 +64,6 @@
 
 }
 
-
-
 .brand span,
 
 .question-brand span {
@@ -83,8 +71,6 @@
   color: #ffd21f;
 
 }
-
-
 
 .poll-label,
 
@@ -102,8 +88,6 @@
 
 }
 
-
-
 .public-card {
 
   width: min(760px, calc(100% - 32px));
@@ -113,8 +97,6 @@
   padding: 0;
 
 }
-
-
 
 .start-card,
 
@@ -128,7 +110,7 @@
 
   border-radius: 24px;
 
-  background: #071A33;
+  background: #0b2344;
 
   box-shadow:
 
@@ -140,8 +122,6 @@
 
 }
 
-
-
 .trophy {
 
   margin-bottom: 10px;
@@ -151,8 +131,6 @@
   filter: drop-shadow(0 6px 18px rgba(255, 198, 0, 0.22));
 
 }
-
-
 
 .small-title {
 
@@ -167,8 +145,6 @@
   letter-spacing: 5px;
 
 }
-
-
 
 .start-card h1,
 
@@ -188,8 +164,6 @@
 
 }
 
-
-
 .start-card h1 span,
 
 .thank-you-card h1 span {
@@ -197,8 +171,6 @@
   color: #ffd21f;
 
 }
-
-
 
 .start-card > p,
 
@@ -215,8 +187,6 @@
   line-height: 1.8;
 
 }
-
-
 
 .name-section {
 
@@ -237,8 +207,6 @@
   background: #071A33;
 
 }
-
-
 
 .name-section input {
 
@@ -262,23 +230,17 @@
 
 }
 
-
-
 .name-section input::placeholder {
 
   color: #9eafd3;
 
 }
 
-
-
 .name-section input:focus {
 
   box-shadow: inset 0 0 0 1px #3c91ff;
 
 }
-
-
 
 .name-section button {
 
@@ -288,9 +250,9 @@
 
   border: 0;
 
-  background: #071A33;
+  background: #ffd21f;
 
-  color: #152044;
+  color: #071A33;
 
   font-size: 12px;
 
@@ -304,23 +266,17 @@
 
 }
 
-
-
 .name-section button:hover {
 
   filter: brightness(1.08);
 
 }
 
-
-
 .name-section button:active {
 
   transform: scale(0.98);
 
 }
-
-
 
 .generic-back-link {
 
@@ -332,8 +288,6 @@
 
 }
 
-
-
 .generic-back-link a {
 
   color: #a9c6ff;
@@ -342,8 +296,6 @@
 
 }
 
-
-
 .generic-back-link a:hover {
 
   color: #ffffff;
@@ -351,8 +303,6 @@
   text-decoration: underline;
 
 }
-
-
 
 .public-error,
 
@@ -376,8 +326,6 @@
 
 }
 
-
-
 .public-footer {
 
   padding: 18px 20px 26px;
@@ -390,15 +338,11 @@
 
 }
 
-
-
 /* ==========================================
 
    IPL QUESTIONS
 
-   \========================================== */
-
-
+   ========================================== */
 
 .question-header {
 
@@ -407,8 +351,6 @@
   padding: 24px 0;
 
 }
-
-
 
 .question-header h1 {
 
@@ -419,8 +361,6 @@
   font-size: clamp(25px, 3vw, 36px);
 
 }
-
-
 
 .question-header p {
 
@@ -434,15 +374,11 @@
 
 }
 
-
-
 .question-header p strong {
 
   color: #ffffff;
 
 }
-
-
 
 .question-header .question-count {
 
@@ -456,8 +392,6 @@
 
 }
 
-
-
 .questions-container {
 
   width: min(900px, calc(100% - 32px));
@@ -465,8 +399,6 @@
   margin: 32px auto 60px;
 
 }
-
-
 
 .questions-container form {
 
@@ -476,8 +408,6 @@
 
 }
 
-
-
 .question-card {
 
   padding: 28px;
@@ -486,13 +416,11 @@
 
   border-radius: 18px;
 
-  background: #071A33;
+  background: #0b2344;
 
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.16);
 
 }
-
-
 
 .question-number {
 
@@ -508,8 +436,6 @@
 
 }
 
-
-
 .question-card h2 {
 
   margin: 0;
@@ -522,8 +448,6 @@
 
 }
 
-
-
 .multiple-hint {
 
   margin: 10px 0 20px;
@@ -534,8 +458,6 @@
 
 }
 
-
-
 .options-grid {
 
   display: grid;
@@ -545,8 +467,6 @@
   gap: 12px;
 
 }
-
-
 
 .option-card {
 
@@ -564,7 +484,7 @@
 
   border-radius: 12px;
 
-  background: #071A33;
+  background: #0b2344;
 
   cursor: pointer;
 
@@ -578,8 +498,6 @@
 
 }
 
-
-
 .option-card:hover {
 
   border-color: rgba(107, 167, 255, 0.85);
@@ -590,19 +508,15 @@
 
 }
 
-
-
 .option-card.selected {
 
   border-color: #419aff;
 
-  background: #071A33;
+  background: #10315b;
 
   box-shadow: inset 0 0 0 1px rgba(65, 154, 255, 0.16);
 
 }
-
-
 
 .option-card input {
 
@@ -615,8 +529,6 @@
   opacity: 0;
 
 }
-
-
 
 .custom-checkbox {
 
@@ -644,17 +556,13 @@
 
 }
 
-
-
 .option-card.selected .custom-checkbox {
 
   border-color: #328eff;
 
-  background: #071A33;
+  background: #1687ff;
 
 }
-
-
 
 .option-text {
 
@@ -665,8 +573,6 @@
   line-height: 1.5;
 
 }
-
-
 
 .submit-poll-button {
 
@@ -682,7 +588,7 @@
 
   border-radius: 12px;
 
-  background: #071A33;
+  background: linear-gradient(135deg, #1687ff, #0759c7);
 
   box-shadow: 0 10px 28px rgba(0, 126, 255, 0.2);
 
@@ -700,8 +606,6 @@
 
 }
 
-
-
 .submit-poll-button:hover:not(:disabled) {
 
   filter: brightness(1.1);
@@ -709,8 +613,6 @@
   transform: translateY(-2px);
 
 }
-
-
 
 .submit-poll-button:disabled {
 
@@ -720,15 +622,11 @@
 
 }
 
-
-
 /* ==========================================
 
    THANK-YOU SCREEN
 
-   \========================================== */
-
-
+   ========================================== */
 
 .thank-you-card {
 
@@ -737,8 +635,6 @@
   padding-bottom: 48px;
 
 }
-
-
 
 .success-box {
 
@@ -758,8 +654,6 @@
 
 }
 
-
-
 .generic-primary-button {
 
   display: inline-flex;
@@ -776,7 +670,7 @@
 
   border-radius: 10px;
 
-  background: #071A33;
+  background: linear-gradient(135deg, #1687ff, #0759c7);
 
   color: #ffffff;
 
@@ -792,23 +686,17 @@
 
 }
 
-
-
 .generic-primary-button:hover {
 
   filter: brightness(1.1);
 
 }
 
-
-
 /* ==========================================
 
    LOADING / ERROR
 
-   \========================================== */
-
-
+   ========================================== */
 
 .generic-poll-message {
 
@@ -830,15 +718,11 @@
 
 }
 
-
-
 /* ==========================================
 
    RESPONSIVE LAYOUT
 
-   \========================================== */
-
-
+   ========================================== */
 
 @media (max-width: 640px) {
 
@@ -852,8 +736,6 @@
 
   }
 
-
-
   .brand,
 
   .question-brand {
@@ -861,8 +743,6 @@
     font-size: 17px;
 
   }
-
-
 
   .poll-label {
 
@@ -872,15 +752,11 @@
 
   }
 
-
-
   .public-card {
 
     margin-top: 30px;
 
   }
-
-
 
   .start-card,
 
@@ -892,8 +768,6 @@
 
   }
 
-
-
   .start-card h1,
 
   .thank-you-card h1 {
@@ -902,8 +776,6 @@
 
   }
 
-
-
   .start-card > p,
 
   .thank-you-text {
@@ -911,8 +783,6 @@
     font-size: 14px;
 
   }
-
-
 
   .name-section {
 
@@ -928,8 +798,6 @@
 
   }
 
-
-
   .name-section input {
 
     min-height: 52px;
@@ -942,8 +810,6 @@
 
   }
 
-
-
   .name-section button {
 
     min-height: 52px;
@@ -951,8 +817,6 @@
     border-radius: 10px;
 
   }
-
-
 
   .question-header {
 
@@ -964,15 +828,11 @@
 
   }
 
-
-
   .question-header .question-count {
 
     font-size: 10px;
 
   }
-
-
 
   .questions-container {
 
@@ -980,23 +840,17 @@
 
   }
 
-
-
   .question-card {
 
     padding: 21px 17px;
 
   }
 
-
-
   .options-grid {
 
     grid-template-columns: 1fr;
 
   }
-
-
 
   .option-card {
 
@@ -1005,8 +859,6 @@
   }
 
 }
-
-
 
 @media (prefers-reduced-motion: reduce) {
 

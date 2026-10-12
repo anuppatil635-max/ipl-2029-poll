@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import {
   BrowserRouter,
@@ -15,14 +16,10 @@ import PollManagement from "./PollManagement.jsx";
 import "./App.css";
 import "./PollSelection.css";
 
-
-
-const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV
-    ? "http://127.0.0.1:8081"
-    : "https://ipl-2029-backend.onrender.com");
-
+const API_BASE = import.meta.env.DEV
+  ? "http://localhost:8082"
+  : (import.meta.env.VITE_API_URL ||
+      "https://ipl-2029-backend.onrender.com");
 
 /* =========================================
    PUBLIC POLL SELECTION PAGE
@@ -38,7 +35,9 @@ function PollSelection() {
 
     async function loadPolls() {
       try {
-        const response = await fetch(`${API_BASE}/api/public/polls/`);
+        const response = await fetch(
+          `${API_BASE}/api/public/polls/`
+        );
 
         if (!response.ok) {
           throw new Error("Unable to load available polls.");
@@ -139,7 +138,9 @@ function PollSelection() {
 
                   <div className="selection-card-content">
                     <span className="selection-card-category">
-                      {isIPL ? "SPORTS & PREDICTION" : "SURVEY"}
+                      {isIPL
+                        ? "SPORTS & PREDICTION"
+                        : "SURVEY"}
                     </span>
 
                     <h2>{poll.title}</h2>
@@ -331,7 +332,9 @@ function PublicPoll() {
   if (loading) {
     return (
       <div className="generic-poll-page">
-        <div className="generic-poll-message">Loading poll...</div>
+        <div className="generic-poll-message">
+          Loading poll...
+        </div>
       </div>
     );
   }
@@ -352,10 +355,7 @@ function PublicPoll() {
 
   if (!poll) return null;
 
-  /* =========================================
-     THANK-YOU SCREEN
-     Shared success design for every poll
-  ========================================= */
+  /* THANK-YOU SCREEN */
 
   if (submitted) {
     return (
@@ -385,9 +385,7 @@ function PublicPoll() {
     );
   }
 
-  /* =========================================
-     NAME / START SCREEN
-  ========================================= */
+  /* NAME / START SCREEN */
 
   if (!started) {
     if (isIPL) {
@@ -455,6 +453,7 @@ function PublicPoll() {
           <Link to="/" className="selection-logo">
             POLL<span>SPACE</span>
           </Link>
+
           <Link to="/" className="generic-back-link">
             All polls
           </Link>
@@ -473,7 +472,9 @@ function PublicPoll() {
           </p>
 
           <div className="generic-poll-info">
-            <span>📋 {poll.questions?.length || 0} questions</span>
+            <span>
+              📋 {poll.questions?.length || 0} questions
+            </span>
             <span>⏱ A few minutes to complete</span>
           </div>
 
@@ -512,9 +513,7 @@ function PublicPoll() {
     );
   }
 
-  /* =========================================
-     QUESTION SCREEN
-  ========================================= */
+  /* QUESTION SCREEN */
 
   return (
     <div className={isIPL ? "question-page" : "generic-poll-page"}>
@@ -525,7 +524,9 @@ function PublicPoll() {
               <div className="question-brand">
                 IPL <span>2029</span>
               </div>
+
               <h1>Prediction Poll</h1>
+
               <p>
                 Welcome, <strong>{name.trim()}</strong>.
                 Select your answers below.
@@ -709,6 +710,63 @@ function PublicPoll() {
 }
 
 /* =========================================
+   REGULAR USER LOGIN PROTECTION
+========================================= */
+
+function UserProtected({ children }) {
+  const [checkingUser, setCheckingUser] = useState(true);
+  const [authenticatedUser, setAuthenticatedUser] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    async function checkUserSession() {
+      try {
+        const response = await fetch(`${API_BASE}/api/user/me/`, {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        if (active) {
+          setAuthenticatedUser(response.ok);
+        }
+      } catch (error) {
+        console.error("User session check failed:", error);
+
+        if (active) {
+          setAuthenticatedUser(false);
+        }
+      } finally {
+        if (active) {
+          setCheckingUser(false);
+        }
+      }
+    }
+
+    checkUserSession();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (checkingUser) {
+    return (
+      <div className="selection-message">
+        Checking your login...
+      </div>
+    );
+  }
+
+  if (!authenticatedUser) {
+    return <Navigate to="/admin?mode=user" replace />;
+  }
+
+  return children;
+}
+
+/* =========================================
    ADMIN HELPERS AND ROUTES
 ========================================= */
 
@@ -747,12 +805,14 @@ function App() {
 
         if (response.ok) {
           const data = await response.json();
+
           if (active) setAdminUser(data.username);
         } else if (active) {
           setAdminUser(null);
         }
       } catch (error) {
         console.error("Session check error:", error);
+
         if (active) setAdminUser(null);
       } finally {
         if (active) setCheckingSession(false);
@@ -788,29 +848,26 @@ function App() {
     window.location.replace("/admin?logout=1");
   };
 
-  if (checkingSession) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#07102f",
-          color: "white",
-          fontFamily: "Arial, sans-serif",
-        }}
-      >
-        Checking...
-      </div>
-    );
-  }
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<PollSelection />} />
-        <Route path="/poll/:pollId" element={<PublicPoll />} />
+        <Route
+          path="/"
+          element={
+            <UserProtected>
+              <PollSelection />
+            </UserProtected>
+          }
+        />
+
+        <Route
+          path="/poll/:pollId"
+          element={
+            <UserProtected>
+              <PublicPoll />
+            </UserProtected>
+          }
+        />
 
         <Route
           path="/admin"
@@ -820,7 +877,9 @@ function App() {
         <Route
           path="/admin/dashboard"
           element={
-            adminUser ? (
+            checkingSession ? (
+              <div>Checking admin session...</div>
+            ) : adminUser ? (
               <AdminDashboard
                 username={adminUser}
                 onLogout={handleLogout}
@@ -834,7 +893,9 @@ function App() {
         <Route
           path="/admin/polls"
           element={
-            adminUser ? (
+            checkingSession ? (
+              <div>Checking admin session...</div>
+            ) : adminUser ? (
               <PollManagement />
             ) : (
               <Navigate to="/admin" replace />
@@ -845,13 +906,15 @@ function App() {
         <Route
           path="/admin/participants"
           element={
-            adminUser ? (
+            checkingSession ? (
+              <div>Checking admin session...</div>
+            ) : adminUser ? (
               <AdminDashboard
                 username={adminUser}
-              onLogout={handleLogout}
+                onLogout={handleLogout}
               />
             ) : (
-            <Navigate to="/admin" replace />
+              <Navigate to="/admin" replace />
             )
           }
         />
@@ -859,7 +922,9 @@ function App() {
         <Route
           path="/admin/analytics"
           element={
-            adminUser ? (
+            checkingSession ? (
+              <div>Checking admin session...</div>
+            ) : adminUser ? (
               <Analytics
                 username={adminUser}
                 onLogout={handleLogout}
@@ -870,7 +935,10 @@ function App() {
           }
         />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route
+          path="*"
+          element={<Navigate to="/" replace />}
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -5,9 +5,10 @@ import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
 
 const API_BASE = (
-
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8081"
-
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV
+    ? "http://localhost:8082"
+    : "https://ipl-2029-backend.onrender.com")
 ).replace(/\/$/, "");
 
 async function readResponse(response) {
