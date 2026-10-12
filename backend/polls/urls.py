@@ -1,31 +1,51 @@
 from django.urls import path
 
 from .views import (
+    # Public poll views
     ActivePollView,
     SubmitPollView,
     PublicPollListView,
+
+    # Regular user authentication
+    UserRegistrationView,
+    UserLoginView,
+    UserMeView,
+    UserLogoutView,
+
+    # Admin authentication
     AdminLoginView,
     AdminMeView,
     AdminLogoutView,
+
+    # Admin poll management
     AdminPollListCreateView,
     AdminPollDetailView,
+
+    # Admin participants
     AdminParticipantsView,
     AdminAddParticipantView,
     AdminDeleteParticipantView,
+
+    # Admin analytics and poll control
     AnalyticsView,
     AdminPollStatusView,
     AdminTogglePollView,
 )
 
 urlpatterns = [
-    # PUBLIC POLL LIST — participants can browse active polls
+    # Public poll list — support both URLs
     path(
         "public/polls/",
         PublicPollListView.as_view(),
         name="public-poll-list",
     ),
+    path(
+        "polls/",
+        PublicPollListView.as_view(),
+        name="public-polls",
+    ),
 
-    # PUBLIC POLL — existing IPL routes
+    # Active poll and submission
     path(
         "poll/",
         ActivePollView.as_view(),
@@ -37,7 +57,7 @@ urlpatterns = [
         name="submit-poll",
     ),
 
-    # PUBLIC POLL — poll-specific share links
+    # Poll-specific share links
     path(
         "poll/<int:poll_id>/",
         ActivePollView.as_view(),
@@ -49,7 +69,29 @@ urlpatterns = [
         name="submit-specific-poll",
     ),
 
-    # ADMIN AUTHENTICATION
+    # Regular user registration and authentication
+    path(
+        "register/",
+        UserRegistrationView.as_view(),
+        name="user-register",
+    ),
+    path(
+        "user/login/",
+        UserLoginView.as_view(),
+        name="user-login",
+    ),
+    path(
+        "user/me/",
+        UserMeView.as_view(),
+        name="user-me",
+    ),
+    path(
+        "user/logout/",
+        UserLogoutView.as_view(),
+        name="user-logout",
+    ),
+
+    # Admin authentication
     path(
         "admin/login/",
         AdminLoginView.as_view(),
@@ -66,7 +108,7 @@ urlpatterns = [
         name="admin-logout",
     ),
 
-    # ADMIN POLL MANAGEMENT
+    # Admin poll management
     path(
         "admin/polls/",
         AdminPollListCreateView.as_view(),
@@ -78,7 +120,7 @@ urlpatterns = [
         name="admin-poll-detail",
     ),
 
-    # ADMIN PARTICIPANTS
+    # Admin participants
     path(
         "admin/participants/",
         AdminParticipantsView.as_view(),
@@ -95,14 +137,14 @@ urlpatterns = [
         name="admin-delete-participant",
     ),
 
-    # ADMIN ANALYTICS
+    # Admin analytics
     path(
         "admin/analytics/",
         AnalyticsView.as_view(),
         name="admin-analytics",
     ),
 
-    # ADMIN POLL CONTROL
+    # Admin poll control
     path(
         "admin/poll/status/",
         AdminPollStatusView.as_view(),

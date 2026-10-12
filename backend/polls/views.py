@@ -1,5 +1,7 @@
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
@@ -33,9 +35,9 @@ def get_selected_poll(request, poll_id=None, active_only=False):
     return polls.first()
 
 
-
-
-
+# ============================================================
+# PUBLIC POLL LIST
+# ============================================================
 
 class PublicPollListView(APIView):
     authentication_classes = []
@@ -60,10 +62,6 @@ class PublicPollListView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-
-
-
-
 # ============================================================
 # PUBLIC POLL API
 # ============================================================
@@ -74,13 +72,15 @@ class ActivePollView(APIView):
 
     def get(self, request, poll_id=None):
         if poll_id is not None:
-            poll = Poll.objects.filter(id=poll_id).prefetch_related(
+            poll = Poll.objects.filter(
+                id=poll_id
+            ).prefetch_related("questions__options").first()
+        else:
+            poll = Poll.objects.filter(
+                is_active=True
+            ).order_by("id").prefetch_related(
                 "questions__options"
             ).first()
-        else:
-            poll = Poll.objects.filter(is_active=True).order_by(
-                "id"
-            ).prefetch_related("questions__options").first()
 
         if not poll:
             return Response(
@@ -117,9 +117,9 @@ class SubmitPollView(APIView):
         if poll_id is not None:
             poll = Poll.objects.filter(id=poll_id).first()
         else:
-            poll = Poll.objects.filter(is_active=True).order_by(
-                "id"
-            ).first()
+            poll = Poll.objects.filter(
+                is_active=True
+            ).order_by("id").first()
 
         if not poll:
             return Response(
@@ -135,6 +135,7 @@ class SubmitPollView(APIView):
 
         questions = list(poll.questions.all().order_by("order"))
         question_ids = {question.id for question in questions}
+
         submitted_ids = [
             item["question_id"] for item in responses_data
         ]
@@ -155,8 +156,10 @@ class SubmitPollView(APIView):
 
         for item in responses_data:
             question = next(
-                q for q in questions if q.id == item["question_id"]
+                q for q in questions
+                if q.id == item["question_id"]
             )
+
             option_ids = item["option_ids"]
 
             if len(option_ids) != len(set(option_ids)):
@@ -166,16 +169,18 @@ class SubmitPollView(APIView):
                 )
 
             valid_ids = set(
-                question.options.filter(id__in=option_ids).values_list(
-                    "id", flat=True
-                )
+                question.options.filter(
+                    id__in=option_ids
+                ).values_list("id", flat=True)
             )
 
             if not option_ids or valid_ids != set(option_ids):
                 return Response(
                     {
-                        "message":
-                        f"Invalid option selected for: {question.text}"
+                        "message": (
+                            f"Invalid option selected for: "
+                            f"{question.text}"
+                        )
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -209,6 +214,190 @@ class SubmitPollView(APIView):
                 "poll_id": poll.id,
             },
             status=status.HTTP_201_CREATED,
+        )
+
+
+# ============================================================
+# REGULAR USER REGISTRATION
+# ============================================================
+
+class UserRegistrationView(APIView):
+    """Create a regular account without admin permissions."""
+
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = str(request.data.get("username", "")).strip()
+        email = str(request.data.get("email", "")).strip()
+        password = request.data.get("password", "")
+        confirm_password = request.data.get("confirm_password", "")
+
+        if not username or not email or not password or not confirm_password:
+            return Response(
+                {
+                    "message": (
+                        "Username, email, password, and "
+                        "confirmation are required."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if password != confirm_password:
+            return Response(
+                {"message": "Passwords do not match."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        User = get_user_model()
+
+        if User.objects.filter(username__iexact=username).exists():
+            return Response(
+                {"message": "That username is already taken."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(email__iexact=email).exists():
+            return Response(
+                {"message": "An account with this email already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            validate_password(password)
+        except ValidationError as exc:
+            return Response(
+                {"message": " ".join(exc.messages)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+        )
+
+        return Response(
+            {
+                "message": "Account created successfully.",
+                "username": user.username,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+# ============================================================
+# REGULAR USER LOGIN
+# ============================================================
+
+class UserLoginView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = str(request.data.get("username", "")).strip()
+        password = request.data.get("password", "")
+
+        if not username or not password:
+            return Response(
+                {"message": "Username and password are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password,
+        )
+
+        if user is None:
+            return Response(
+                {"message": "Invalid username or password."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        if user.is_staff:
+            return Response(
+                {
+                    "message": (
+                        "Please use the admin login for this account."
+                    )
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        login(request, user)
+
+        return Response(
+            {
+                "message": "Login successful.",
+                "username": user.username,
+                "is_admin": False,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# ============================================================
+# REGULAR USER SESSION CHECK
+# ============================================================
+
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class UserMeView(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return Response(
+                {"authenticated": False},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        if request.user.is_staff:
+            return Response(
+                {"message": "Please use the admin dashboard."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return Response(
+            {
+                "authenticated": True,
+                "username": request.user.username,
+                "is_admin": False,
+                "csrfToken": get_token(request),
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# ============================================================
+# REGULAR USER LOGOUT
+# ============================================================
+
+class UserLogoutView(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return Response(
+                {"message": "You are not logged in."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        if request.user.is_staff:
+            return Response(
+                {"message": "Please use admin logout."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        logout(request)
+
+        return Response(
+            {"message": "Logout successful."},
+            status=status.HTTP_200_OK,
         )
 
 
@@ -304,6 +493,7 @@ class AdminPollListCreateView(APIView):
             )
 
         poll = serializer.save()
+
         return Response(
             PollSerializer(poll).data,
             status=status.HTTP_201_CREATED,
@@ -319,23 +509,26 @@ class AdminPollDetailView(APIView):
 
     def get(self, request, poll_id):
         poll = self.get_poll(poll_id)
+
         if not poll:
             return Response(
                 {"message": "Poll not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
         return Response(PollSerializer(poll).data)
 
     def patch(self, request, poll_id):
         poll = self.get_poll(poll_id)
+
         if not poll:
             return Response(
                 {"message": "Poll not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # Update the poll title, description, or active status.
         allowed = {"title", "description", "is_active"}
+
         for field in allowed.intersection(request.data.keys()):
             setattr(poll, field, request.data[field])
 
@@ -344,6 +537,7 @@ class AdminPollDetailView(APIView):
 
     def delete(self, request, poll_id):
         poll = self.get_poll(poll_id)
+
         if not poll:
             return Response(
                 {"message": "Poll not found."},
@@ -353,9 +547,10 @@ class AdminPollDetailView(APIView):
         if poll.participants.exists():
             return Response(
                 {
-                    "message":
-                    "This poll has participants. Close it instead "
-                    "to preserve its results."
+                    "message": (
+                        "This poll has participants. Close it instead "
+                        "to preserve its results."
+                    )
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -378,6 +573,7 @@ class AdminParticipantsView(APIView):
         ).order_by("-submitted_at")
 
         poll_id = request.query_params.get("poll_id")
+
         if poll_id:
             participants = participants.filter(poll_id=poll_id)
 
@@ -424,7 +620,10 @@ class AdminDeleteParticipantView(APIView):
             )
 
         participant.delete()
-        return Response({"message": "Participant deleted successfully."})
+
+        return Response(
+            {"message": "Participant deleted successfully."}
+        )
 
 
 class AdminAddParticipantView(APIView):
@@ -448,12 +647,13 @@ class AdminAddParticipantView(APIView):
             )
 
         poll_id = request.data.get("poll_id")
+
         if poll_id:
             poll = Poll.objects.filter(id=poll_id).first()
         else:
-            poll = Poll.objects.filter(is_active=True).order_by(
-                "id"
-            ).first()
+            poll = Poll.objects.filter(
+                is_active=True
+            ).order_by("id").first()
 
         if not poll:
             return Response(
@@ -479,6 +679,7 @@ class AdminAddParticipantView(APIView):
 
         for question in questions:
             option_id = responses.get(str(question.id))
+
             option = Option.objects.filter(
                 id=option_id,
                 question=question,
@@ -487,8 +688,10 @@ class AdminAddParticipantView(APIView):
             if not option:
                 return Response(
                     {
-                        "message":
-                        f"Invalid or missing answer for: {question.text}"
+                        "message": (
+                            f"Invalid or missing answer for: "
+                            f"{question.text}"
+                        )
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -533,9 +736,9 @@ class AnalyticsView(APIView):
         if poll_id:
             poll = Poll.objects.filter(id=poll_id).first()
         else:
-            poll = Poll.objects.filter(is_active=True).order_by(
-                "id"
-            ).first()
+            poll = Poll.objects.filter(
+                is_active=True
+            ).order_by("id").first()
 
         if not poll:
             return Response(
@@ -544,6 +747,7 @@ class AnalyticsView(APIView):
             )
 
         participants = Participant.objects.filter(poll=poll)
+
         responses = PollResponse.objects.filter(
             participant__poll=poll
         )
@@ -560,7 +764,9 @@ class AnalyticsView(APIView):
                     selected_option=option
                 ).count()
 
-                percentage = round(count * 100 / total, 1) if total else 0
+                percentage = round(
+                    count * 100 / total, 1
+                ) if total else 0
 
                 options_data.append(
                     {
