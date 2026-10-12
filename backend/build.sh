@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 set -o errexit
 
@@ -7,6 +8,7 @@ python manage.py collectstatic --no-input
 
 python manage.py migrate
 
+# Create or update the configured admin user.
 python manage.py shell -c "
 from django.contrib.auth.models import User
 import os
@@ -27,3 +29,6 @@ if username and password:
 else:
     print('ADMIN_USERNAME or ADMIN_PASSWORD not configured')
 "
+
+# Seed default polls, questions, and options.
+python manage.py seed_poll
